@@ -1,6 +1,6 @@
 {
   "name": "@iyulab/u-scene",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Declarative engineering scenes for the web: parametric diagrams, interactive handles, and simulation playback, with static SVG output.",
   "type": "module",
   "sideEffects": [
@@ -66,6 +66,7 @@
     "node": ">=24"
   },
   "devDependencies": {
+    "@types/node": "^24",
     "happy-dom": "^21.0.1",
     "lit": "^3.3.3",
     "typescript": "^5.9.3",

@@ -48,7 +48,8 @@ Tones: `ink`, `ink-strong`, `muted`, `faint`, `line`, `paper`, `primary`, `accen
 
 `angleDiagram`, `bendSectionDiagram`, `threadProfileDiagram`, `rectSectionDiagram`,
 `ringSectionDiagram`, `floorPlanDiagram` - each takes a model of values and pre-formatted
-labels and returns a scene (or `null` when there is nothing to draw).
+labels and returns a scene. `angleDiagram` returns `null` when there are no rays to draw, and
+`floorPlanDiagram` returns `null` when `fixtureCount` is zero or less.
 
 ## Rules
 
