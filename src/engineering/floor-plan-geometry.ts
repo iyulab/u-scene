@@ -45,12 +45,35 @@ const FLOOR_PLAN_LABEL_GAP = 14;
 const FLOOR_PLAN_GUTTER = 34;
 /** Fixture marker radius (px, a render constant - the preset reuses it). */
 export const FLOOR_PLAN_FIXTURE_RADIUS = 4;
+/** Fixture marker outline width (px, a render constant - the preset reuses it). */
+export const FLOOR_PLAN_FIXTURE_STROKE_WIDTH = 1;
+
+/**
+ * The most fixtures `view` can show as separate markers. A marker covers
+ * 2 * FLOOR_PLAN_FIXTURE_RADIUS + FLOOR_PLAN_FIXTURE_STROKE_WIDTH px (outline included), so
+ * the drawable area fits at most floor(availW / that) x floor(availH / that) of them - and
+ * only for a room whose shape matches the area exactly. Above this count markers touch in
+ * every room shape: the grid no longer shows how many fixtures there are, only a smear.
+ */
+export function floorPlanMaxFixtures(view: FloorPlanView): number {
+  const pitch = 2 * FLOOR_PLAN_FIXTURE_RADIUS + FLOOR_PLAN_FIXTURE_STROKE_WIDTH;
+  const { availW, availH } = drawableArea(view);
+  return Math.floor(availW / pitch) * Math.floor(availH / pitch);
+}
+
+/** The area left for the room once padding and the dimension gutter are taken (px). */
+function drawableArea(view: FloorPlanView): { availW: number; availH: number } {
+  return {
+    availW: Math.max(1, view.width - 2 * view.padding - FLOOR_PLAN_GUTTER),
+    availH: Math.max(1, view.height - 2 * view.padding - FLOOR_PLAN_GUTTER),
+  };
+}
 
 /**
  * Splits `count` into the rows x cols grid closest to the room aspect ratio
  * (roomLengthM:roomWidthM). Uses neither sqrt nor pow: it walks every integer column
- * candidate and keeps the combination with the smallest aspect error - linear time, so it
- * stays safe on the render path even for counts in the hundreds.
+ * candidate and keeps the combination with the smallest aspect error - linear time; the
+ * preset caps the count (floorPlanMaxFixtures), so it stays cheap on the render path.
  */
 function chooseFloorPlanGrid(count: number, aspect: number): { cols: number; rows: number } {
   const a = aspect > 0 ? aspect : 1;
@@ -80,8 +103,7 @@ export function floorPlanGeometry(input: FloorPlanInput, view: FloorPlanView): F
   const widthM = Math.max(0, input.roomWidthM) || 1;
   const count = Math.max(1, Math.round(input.fixtureCount));
 
-  const availW = Math.max(1, view.width - 2 * view.padding - FLOOR_PLAN_GUTTER);
-  const availH = Math.max(1, view.height - 2 * view.padding - FLOOR_PLAN_GUTTER);
+  const { availW, availH } = drawableArea(view);
   // Uniform scale - length and width must share one value or the room proportions lie
   // (same principle as bendSectionGeometry).
   const scale = Math.min(availW / lengthM, availH / widthM);
