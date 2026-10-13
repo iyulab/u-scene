@@ -38,3 +38,13 @@ describe('bendSectionDiagram', () => {
     expect(() => renderToSvgString(scene)).not.toThrow();
   });
 });
+
+describe('bendSectionDiagram input checks', () => {
+  it('rejects bad numbers with a TypeError but allows a sharp bend (radius 0)', () => {
+    expect(() => bendSectionDiagram({ ...model, thicknessMm: NaN })).toThrow(TypeError);
+    expect(() => bendSectionDiagram({ ...model, insideRadiusMm: -1 })).toThrow(TypeError);
+    expect(() => bendSectionDiagram({ ...model, bendAngleDeg: Infinity })).toThrow(TypeError);
+    expect(() => bendSectionDiagram({ ...model, kFactor: NaN })).toThrow(TypeError);
+    expect(() => bendSectionDiagram({ ...model, insideRadiusMm: 0 })).not.toThrow();
+  });
+});

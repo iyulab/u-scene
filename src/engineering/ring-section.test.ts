@@ -29,3 +29,12 @@ describe('ringSectionDiagram', () => {
     expect(() => renderToSvgString(scene)).not.toThrow();
   });
 });
+
+describe('ringSectionDiagram input checks', () => {
+  it('rejects bad numbers with a TypeError but allows a solid disc (inner 0)', () => {
+    expect(() => ringSectionDiagram({ outerDiameterMm: NaN, innerDiameterMm: 0, labels })).toThrow(TypeError);
+    expect(() => ringSectionDiagram({ outerDiameterMm: 10, innerDiameterMm: -1, labels })).toThrow(TypeError);
+    expect(() => ringSectionDiagram({ outerDiameterMm: 10, innerDiameterMm: 0, boltCount: Infinity, labels })).toThrow(TypeError);
+    expect(() => ringSectionDiagram({ outerDiameterMm: 10, innerDiameterMm: 0, labels })).not.toThrow();
+  });
+});

@@ -1,4 +1,5 @@
 import type { Scene, SceneNode } from '../core/types.js';
+import { positive } from './model-checks.js';
 import { rectSectionGeometry } from './rect-section-geometry.js';
 import type { RectSectionKind, RectSectionSubstrate, RectSectionView } from './rect-section-geometry.js';
 
@@ -18,6 +19,8 @@ const VIEW: RectSectionView = { width: 360, height: 230, padding: 24 };
 /** Ratios that cannot be drawn to scale lift the short side to a minimum visible size and
  *  break the long dimension line; the labels carry the real values. */
 export function rectSectionDiagram(m: RectSectionDiagramModel): Scene {
+  positive(m.widthMm, 'rectSectionDiagram widthMm');
+  positive(m.thicknessMm, 'rectSectionDiagram thicknessMm');
   const g = rectSectionGeometry({ kind: m.kind, widthMm: m.widthMm, thicknessMm: m.thicknessMm, substrate: m.substrate }, VIEW);
   const material = m.kind === 'strip'
     ? { paint: '#d97706' as const, opacity: 0.85 }

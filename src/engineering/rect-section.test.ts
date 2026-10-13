@@ -16,3 +16,11 @@ describe('rectSectionDiagram', () => {
     expect(scene.nodes.some((n) => n.kind === 'rect' && n.fill?.paint === '#16a34a')).toBe(true);
   });
 });
+
+describe('rectSectionDiagram input checks', () => {
+  it('rejects non-positive or non-finite sizes with a TypeError', () => {
+    const labels = { width: 'w', thickness: 't' };
+    expect(() => rectSectionDiagram({ kind: 'strip', widthMm: 1, thicknessMm: NaN, labels })).toThrow(TypeError);
+    expect(() => rectSectionDiagram({ kind: 'strip', widthMm: 0, thicknessMm: 1, labels })).toThrow(TypeError);
+  });
+});

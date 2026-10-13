@@ -31,3 +31,12 @@ describe('threadProfileDiagram', () => {
     expect(() => renderToSvgString(scene)).not.toThrow();
   });
 });
+
+describe('threadProfileDiagram input checks', () => {
+  it('rejects bad numbers with a TypeError', () => {
+    expect(() => threadProfileDiagram({ ...minimal, pitchMm: NaN })).toThrow(TypeError);
+    expect(() => threadProfileDiagram({ ...minimal, majorDiameterMm: 0 })).toThrow(TypeError);
+    expect(() => threadProfileDiagram({ ...minimal, threadAngleDeg: Infinity })).toThrow(TypeError);
+    expect(() => threadProfileDiagram({ ...minimal, wireDiameterMm: -1 })).toThrow(TypeError);
+  });
+});

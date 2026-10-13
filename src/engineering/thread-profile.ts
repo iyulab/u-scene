@@ -1,4 +1,5 @@
 import type { Scene, SceneNode } from '../core/types.js';
+import { positive } from './model-checks.js';
 import { threadProfileGeometry } from './thread-profile-geometry.js';
 import type { ThreadProfileView } from './thread-profile-geometry.js';
 
@@ -19,6 +20,12 @@ const VIEW: ThreadProfileView = { width: 360, height: 220, padding: 34 };
 /** About three thread periods drawn large, with the major, minor and pitch diameters as
  *  labelled reference lines. A detail view, not a full-diameter section. */
 export function threadProfileDiagram(m: ThreadProfileDiagramModel): Scene {
+  positive(m.pitchMm, 'threadProfileDiagram pitchMm');
+  positive(m.threadAngleDeg, 'threadProfileDiagram threadAngleDeg');
+  positive(m.majorDiameterMm, 'threadProfileDiagram majorDiameterMm');
+  if (m.minorDiameterMm != null) positive(m.minorDiameterMm, 'threadProfileDiagram minorDiameterMm');
+  if (m.pitchDiameterMm != null) positive(m.pitchDiameterMm, 'threadProfileDiagram pitchDiameterMm');
+  if (m.wireDiameterMm != null) positive(m.wireDiameterMm, 'threadProfileDiagram wireDiameterMm');
   const g = threadProfileGeometry({
     pitchMm: m.pitchMm,
     threadAngleDeg: m.threadAngleDeg,

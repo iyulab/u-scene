@@ -1,6 +1,7 @@
 import { arcPath, polarPoint } from '../core/geometry.js';
 import type { LabelBox, LabelPlacement } from '../core/geometry.js';
 import type { HexColor, Paint, Scene, SceneNode } from '../core/types.js';
+import { finite } from './model-checks.js';
 import {
   RAY_LABEL_ASSUMED_WIDTH, RAY_LABEL_WORST_CASE_WIDTH, RAY_VIEW,
   deltaLabelPosition, rayLabelBox, rayLabelPlacements,
@@ -96,6 +97,9 @@ function deltaNodes(delta: AngleDelta, avoid: LabelBox[]): SceneNode[] {
  * delta arc between two angles. Returns null when there is nothing to draw.
  */
 export function angleDiagram(m: AngleDiagramModel): Scene | null {
+  m.rays.forEach((r, i) => finite(r.angleDeg, `angleDiagram rays[${i}].angleDeg`));
+  if (m.band) { finite(m.band.fromDeg, 'angleDiagram band.fromDeg'); finite(m.band.toDeg, 'angleDiagram band.toDeg'); }
+  if (m.delta) { finite(m.delta.fromDeg, 'angleDiagram delta.fromDeg'); finite(m.delta.toDeg, 'angleDiagram delta.toDeg'); }
   if (m.rays.length === 0) return null;
 
   // Fixed texts the ray labels must avoid, sized at worst-case width.

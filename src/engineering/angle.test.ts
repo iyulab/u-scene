@@ -61,3 +61,11 @@ describe('angleDiagram', () => {
     expect(() => angleDiagram({ rays: [{ angleDeg: 230, label: 'x' }] })).toThrow(RangeError);
   });
 });
+
+describe('angleDiagram input checks', () => {
+  it('rejects non-finite angles with a TypeError', () => {
+    expect(() => angleDiagram({ rays: [{ angleDeg: NaN, label: 'x' }] })).toThrow(TypeError);
+    expect(() => angleDiagram({ rays: [{ angleDeg: 10, label: 'x' }], band: { fromDeg: 0, toDeg: Infinity } })).toThrow(TypeError);
+    expect(() => angleDiagram({ rays: [{ angleDeg: 10, label: 'x' }], delta: { fromDeg: NaN, toDeg: 5, label: 'd' } })).toThrow(TypeError);
+  });
+});

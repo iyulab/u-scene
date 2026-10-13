@@ -16,3 +16,13 @@ describe('floorPlanDiagram', () => {
     expect(() => renderToSvgString(scene)).not.toThrow();
   });
 });
+
+describe('floorPlanDiagram input checks', () => {
+  it('rejects bad numbers with a TypeError', () => {
+    expect(() => floorPlanDiagram({ roomLengthM: NaN, roomWidthM: 8, fixtureCount: 4, labels })).toThrow(TypeError);
+    expect(() => floorPlanDiagram({ roomLengthM: 10, roomWidthM: 0, fixtureCount: 4, labels })).toThrow(TypeError);
+    expect(() => floorPlanDiagram({ roomLengthM: 10, roomWidthM: 8, fixtureCount: Infinity, labels })).toThrow(TypeError);
+    expect(() => floorPlanDiagram({ roomLengthM: 10, roomWidthM: 8, fixtureCount: NaN, labels })).toThrow(TypeError);
+    expect(() => floorPlanDiagram({ roomLengthM: 10, roomWidthM: 8, fixtureCount: 20000, labels })).toThrow(/at most 10000/);
+  });
+});

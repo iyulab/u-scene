@@ -1,4 +1,5 @@
 import type { Scene, SceneNode } from '../core/types.js';
+import { finite, positive } from './model-checks.js';
 import { FLOOR_PLAN_FIXTURE_RADIUS, floorPlanGeometry } from './floor-plan-geometry.js';
 import type { FloorPlanView } from './floor-plan-geometry.js';
 
@@ -11,10 +12,17 @@ export interface FloorPlanDiagramModel {
   title?: string;
 }
 
+/** Upper bound on fixtures: the grid search is linear in the count. */
+const MAX_FIXTURES = 10000;
+
 const VIEW: FloorPlanView = { width: 340, height: 280, padding: 20 };
 
 /** A rectangular plan with fixtures on an even grid - lights, sprinklers, racks. */
 export function floorPlanDiagram(m: FloorPlanDiagramModel): Scene | null {
+  positive(m.roomLengthM, 'floorPlanDiagram roomLengthM');
+  positive(m.roomWidthM, 'floorPlanDiagram roomWidthM');
+  finite(m.fixtureCount, 'floorPlanDiagram fixtureCount');
+  if (m.fixtureCount > MAX_FIXTURES) throw new TypeError(`u-scene: floorPlanDiagram fixtureCount must be at most ${MAX_FIXTURES}`);
   if (m.fixtureCount <= 0) return null;
   const g = floorPlanGeometry({ roomLengthM: m.roomLengthM, roomWidthM: m.roomWidthM, fixtureCount: m.fixtureCount }, VIEW);
   const nodes: SceneNode[] = [

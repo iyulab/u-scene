@@ -1,4 +1,5 @@
 import type { Scene, SceneNode } from '../core/types.js';
+import { finite, nonNegative, positive } from './model-checks.js';
 import { bendSectionGeometry } from './bend-section-geometry.js';
 import type { BendSectionView } from './bend-section-geometry.js';
 
@@ -21,6 +22,12 @@ const VIEW: BendSectionView = { width: 340, height: 260, padding: 36 };
 /** A sheet bent over its inside radius, dimensioned for thickness, radius, angle and,
  *  when given, the neutral axis. */
 export function bendSectionDiagram(m: BendSectionDiagramModel): Scene {
+  positive(m.thicknessMm, 'bendSectionDiagram thicknessMm');
+  nonNegative(m.insideRadiusMm, 'bendSectionDiagram insideRadiusMm');
+  finite(m.bendAngleDeg, 'bendSectionDiagram bendAngleDeg');
+  if (m.kFactor != null) finite(m.kFactor, 'bendSectionDiagram kFactor');
+  if (m.kFactorMin != null) finite(m.kFactorMin, 'bendSectionDiagram kFactorMin');
+  if (m.kFactorMax != null) finite(m.kFactorMax, 'bendSectionDiagram kFactorMax');
   const showNeutral = m.kFactor != null && m.labels.neutralAxis != null;
   const g = bendSectionGeometry({
     thicknessMm: m.thicknessMm,

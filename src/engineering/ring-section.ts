@@ -1,4 +1,5 @@
 import type { Scene, SceneNode } from '../core/types.js';
+import { nonNegative, positive } from './model-checks.js';
 import { ringSectionGeometry } from './ring-section-geometry.js';
 import type { RingSectionView } from './ring-section-geometry.js';
 
@@ -22,6 +23,11 @@ const VIEW: RingSectionView = { width: 360, height: 280, padding: 24 };
 /** Concentric outer and inner circles. A wall thinner than the minimum visible width is
  *  drawn thicker and marked as not to scale; the dimension labels carry the real values. */
 export function ringSectionDiagram(m: RingSectionDiagramModel): Scene {
+  positive(m.outerDiameterMm, 'ringSectionDiagram outerDiameterMm');
+  nonNegative(m.innerDiameterMm, 'ringSectionDiagram innerDiameterMm');
+  if (m.referenceDiameterMm != null) positive(m.referenceDiameterMm, 'ringSectionDiagram referenceDiameterMm');
+  if (m.boltCircleDiameterMm != null) positive(m.boltCircleDiameterMm, 'ringSectionDiagram boltCircleDiameterMm');
+  if (m.boltCount != null) nonNegative(m.boltCount, 'ringSectionDiagram boltCount');
   const g = ringSectionGeometry({
     outerDiameterMm: m.outerDiameterMm,
     innerDiameterMm: m.innerDiameterMm,
