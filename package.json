@@ -1,0 +1,74 @@
+{
+  "name": "@iyulab/u-scene",
+  "version": "0.0.0",
+  "description": "Declarative engineering scenes for the web: parametric diagrams, interactive handles, and simulation playback, with static SVG output.",
+  "type": "module",
+  "sideEffects": [
+    "./dist/element/index.js"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./element": {
+      "types": "./dist/element/index.d.ts",
+      "default": "./dist/element/index.js"
+    },
+    "./engineering": {
+      "types": "./dist/engineering/index.d.ts",
+      "default": "./dist/engineering/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check:public-text": "node scripts/check-public-text.mjs",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "prepublishOnly": "npm run clean && npm run build && npm run test"
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "lit": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "svg",
+    "diagram",
+    "engineering",
+    "scene",
+    "web-components",
+    "lit",
+    "visualization"
+  ],
+  "author": "iyulab",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iyulab/u-scene.git"
+  },
+  "homepage": "https://github.com/iyulab/u-scene#readme",
+  "bugs": {
+    "url": "https://github.com/iyulab/u-scene/issues"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "happy-dom": "^21.0.1",
+    "lit": "^3.3.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  }
+}
