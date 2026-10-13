@@ -1,10 +1,11 @@
 # u-scene
 
-Declarative engineering scenes for the web: parametric diagrams, interactive handles, and
-simulation playback, with static SVG output.
+Declarative engineering scenes for the web: parametric diagrams from plain data, rendered to
+a static SVG string or a `<u-scene>` element. Interactive handles and simulation playback are
+planned for 0.2.
 
 A scene is plain data. The same scene renders to a static SVG string (no DOM, safe at build
-time) and to an interactive `<u-scene>` element.
+time) and to a `<u-scene>` element, which draws through that same function.
 
 u-scene never computes domain values and never formats numbers: the host computes, formats
 its labels, and hands over a scene. u-scene only maps it to the screen.
@@ -49,10 +50,17 @@ Tones: `ink`, `ink-strong`, `muted`, `faint`, `line`, `paper`, `primary`, `accen
 `angleDiagram`, `bendSectionDiagram`, `threadProfileDiagram`, `rectSectionDiagram`,
 `ringSectionDiagram`, `floorPlanDiagram` - each takes a model of values and pre-formatted
 labels and returns a scene. `angleDiagram` returns `null` when there are no rays to draw, and
-`floorPlanDiagram` returns `null` when `fixtureCount` is zero or less.
+`floorPlanDiagram` returns `null` when `fixtureCount` is zero or less, or above
+`FLOOR_PLAN_MAX_FIXTURES` (638 - beyond it the markers touch in every room shape, so the
+plan could no longer show the count).
 
 ## Rules
 
 - A scene that does not validate throws a `TypeError`; nothing is drawn from bad numbers.
 - Labels are shown exactly as given and are always escaped.
 - Presets reject non-finite or out-of-range model values with a `TypeError`.
+- `angleDiagram` draws angles from `RAY_ANGLE_MIN_DEG` to `RAY_ANGLE_MAX_DEG` (0 to 210
+  degrees) and throws a `RangeError` for a ray or delta angle outside that range - it never
+  clamps an angle into a wrong drawing. Check values against these exported constants and
+  omit the diagram when one falls outside.
+- A scene's `title` renders as `<title>` and its `description` as `<desc>`, both escaped.

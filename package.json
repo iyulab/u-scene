@@ -1,7 +1,7 @@
 {
   "name": "@iyulab/u-scene",
-  "version": "0.1.0",
-  "description": "Declarative engineering scenes for the web: parametric diagrams, interactive handles, and simulation playback, with static SVG output.",
+  "version": "0.1.1",
+  "description": "Declarative engineering scenes for the web: parametric diagrams from plain data, rendered to static SVG or a <u-scene> element. Interactive handles and simulation playback are planned.",
   "type": "module",
   "sideEffects": [
     "./dist/element/index.js"

@@ -129,9 +129,9 @@ function assertInAngleDomain(angleDeg: number, context: string): void {
   if (angleDeg < RAY_ANGLE_MIN_DEG - ANGLE_DOMAIN_EPS || angleDeg > RAY_ANGLE_MAX_DEG + ANGLE_DOMAIN_EPS) {
     throw new RangeError(
       `${context}: angle ${angleDeg}° is outside the supported domain ` +
-        `[${RAY_ANGLE_MIN_DEG}, ${RAY_ANGLE_MAX_DEG}]°. This is a hard limit (see the ` +
-        `RAY_ANGLE_MAX_DEG docblock in this file) — callers must not pass angles beyond ` +
-        `it; degrade visibly (e.g. omit the diagram) instead of calling into this function.`
+        `[RAY_ANGLE_MIN_DEG, RAY_ANGLE_MAX_DEG] = [${RAY_ANGLE_MIN_DEG}, ${RAY_ANGLE_MAX_DEG}]°. ` +
+        `Both bounds are exported from @iyulab/u-scene/engineering (see the README Rules): ` +
+        `check an angle against them and omit the diagram instead of passing it.`
     );
   }
 }
