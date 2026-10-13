@@ -7,7 +7,10 @@ on:
   workflow_call:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  # In a called workflow github.workflow is the caller's name, so the push CI and the CI that
+  # publish.yml calls land in separate groups and neither cancels the other (a cancelled
+  # release CI would silently skip the publish).
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

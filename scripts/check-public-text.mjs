@@ -1,17 +1,34 @@
 #!/usr/bin/env node
 // Public-text gate: this package is published, so its sources and docs must not carry
-// non-English prose or context that only means something inside a consumer project.
+// non-English prose, ticket ids or machine paths. The tracked rules stay generic. Words that
+// only mean something to a particular consumer live in an untracked local file
+// (scripts/public-text-denylist.local.txt: one case-insensitive word per line, '#' starts a
+// comment), so this public script never has to name them.
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const TARGETS = ['src', 'README.md', 'CHANGELOG.md'];
+const DENYLIST = join(ROOT, 'scripts', 'public-text-denylist.local.txt');
 const RULES = [
   [/[ᄀ-ᇿ㄰-㆏가-힯]/, 'Hangul text'],
   [/\bcycle-\d|\bNT-\d|\bD-\d{2,}|\bR\d-\d/, 'internal ticket id'],
-  [/[A-Za-z]:\\|\/Users\//, 'absolute path'],
+  [/[A-Za-z]:\\|\/Users\/|\/home\//, 'absolute path'],
 ];
+
+function escapeRegExp(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+if (existsSync(DENYLIST)) {
+  const words = readFileSync(DENYLIST, 'utf8')
+    .split(/\r?\n/)
+    .map((line) => line.replace(/#.*/, '').trim())
+    .filter(Boolean);
+  if (words.length > 0) RULES.push([new RegExp(words.map(escapeRegExp).join('|'), 'i'), 'locally denied word']);
+  console.log(`check-public-text: ${words.length} local deny word(s) loaded`);
+}
 
 function walk(p, out = []) {
   if (statSync(p).isDirectory()) {
