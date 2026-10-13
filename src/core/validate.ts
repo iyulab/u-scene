@@ -9,6 +9,7 @@ const ANCHORS: ReadonlySet<unknown> = new Set(['start', 'middle', 'end']);
 const WEIGHTS: ReadonlySet<unknown> = new Set([400, 500, 600, 700]);
 const LINECAPS: ReadonlySet<unknown> = new Set(['butt', 'round', 'square']);
 const LINEJOINS: ReadonlySet<unknown> = new Set(['miter', 'round', 'bevel']);
+const MARKERS: ReadonlySet<unknown> = new Set(['arrow']);
 const FILL_RULES: ReadonlySet<unknown> = new Set(['nonzero', 'evenodd']);
 
 function oneOf(allowed: ReadonlySet<unknown>, value: unknown, at: string): void {
@@ -56,7 +57,7 @@ function node(n: SceneNode, at: string): void {
   switch (n.kind) {
     case 'path':
       if (!PATH_DATA.test(n.d)) fail(`${at}.d`, `is not valid path data: "${n.d.slice(0, 40)}"`);
-      if (n.markerEnd !== undefined) oneOf(new Set(['arrow']), n.markerEnd, `${at}.markerEnd`);
+      if (n.markerEnd !== undefined) oneOf(MARKERS, n.markerEnd, `${at}.markerEnd`);
       break;
     case 'line':
       finite(n.x1, `${at}.x1`); finite(n.y1, `${at}.y1`); finite(n.x2, `${at}.x2`); finite(n.y2, `${at}.y2`);
@@ -77,6 +78,8 @@ function node(n: SceneNode, at: string): void {
       if (n.weight !== undefined) oneOf(WEIGHTS, n.weight, `${at}.weight`);
       resolvePaint(n.paint);
       return;
+    default:
+      fail(at, `has unknown kind "${String((n as { kind: unknown }).kind)}"`);
   }
   stroke(n.stroke, at);
   fill(n.fill, at);
