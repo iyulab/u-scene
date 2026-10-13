@@ -90,6 +90,8 @@ function node(n: SceneNode, at: string): void {
 export function assertScene(scene: Scene): void {
   if (!Number.isFinite(scene.width) || scene.width <= 0) fail('width', `must be a positive finite number (got ${scene.width})`);
   if (!Number.isFinite(scene.height) || scene.height <= 0) fail('height', `must be a positive finite number (got ${scene.height})`);
+  if (scene.title !== undefined && typeof scene.title !== 'string') fail('title', `must be a string (got ${typeof scene.title})`);
+  if (scene.description !== undefined && typeof scene.description !== 'string') fail('description', `must be a string (got ${typeof scene.description})`);
   if (scene.maxWidth !== undefined && !REM.test(scene.maxWidth)) fail('maxWidth', `must be a rem length (got "${scene.maxWidth}")`);
   scene.nodes.forEach((n, i) => node(n, `nodes[${i}]`));
 }

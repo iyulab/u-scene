@@ -22,6 +22,12 @@ describe('renderToSvgString', () => {
     expect(out).toContain('>W/T &lt; 2</text>');
   });
 
+  it('renders the description as an escaped <desc> right after <title>', () => {
+    const out = renderToSvgString({ ...base, title: 'T', description: 'Rays at 30 & <45> degrees' });
+    expect(out).toContain('<title>T</title><desc>Rays at 30 &amp; &lt;45&gt; degrees</desc>');
+    expect(renderToSvgString(base)).not.toContain('<desc>');
+  });
+
   it('renders text with defaults and overrides', () => {
     const out = renderToSvgString({
       ...base,

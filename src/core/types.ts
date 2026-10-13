@@ -88,6 +88,8 @@ export interface Scene {
   height: number;
   /** Accessible name, rendered as `<title>`. */
   title?: string;
+  /** Longer accessible description, rendered as `<desc>`. Shown exactly as given, escaped. */
+  description?: string;
   /** CSS max-width of the rendered SVG, a rem length. Default `26rem`. */
   maxWidth?: string;
   nodes: readonly SceneNode[];

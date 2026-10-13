@@ -16,6 +16,12 @@ describe('assertScene', () => {
     expect(() => assertScene(ok)).not.toThrow();
   });
 
+  it('accepts string title and description and rejects anything else', () => {
+    expect(() => assertScene({ ...ok, title: 'T', description: 'D' })).not.toThrow();
+    expect(() => assertScene({ ...ok, description: 42 as unknown as string })).toThrow(/description must be a string/);
+    expect(() => assertScene({ ...ok, title: {} as unknown as string })).toThrow(/title must be a string/);
+  });
+
   it('rejects a non-positive or non-finite size', () => {
     expect(() => assertScene({ ...ok, width: 0 })).toThrow(TypeError);
     expect(() => assertScene({ ...ok, height: Number.NaN })).toThrow(TypeError);

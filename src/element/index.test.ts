@@ -13,10 +13,11 @@ async function mount(scene: USceneElement['scene']): Promise<USceneElement> {
 
 describe('<u-scene>', () => {
   it('renders the scene svg into its shadow root', async () => {
-    const el = await mount({ width: 10, height: 20, title: 'T', nodes: [{ kind: 'text', x: 1, y: 1, text: 'x < y', anchor: 'start', paint: 'ink' }] });
+    const el = await mount({ width: 10, height: 20, title: 'T', description: 'D & more', nodes: [{ kind: 'text', x: 1, y: 1, text: 'x < y', anchor: 'start', paint: 'ink' }] });
     const svg = el.shadowRoot!.querySelector('svg')!;
     expect(svg.getAttribute('viewBox')).toBe('0 0 10 20');
     expect(svg.querySelector('title')!.textContent).toBe('T');
+    expect(svg.querySelector('desc')!.textContent).toBe('D & more');
     expect(svg.querySelector('text')!.textContent).toBe('x < y');
   });
 

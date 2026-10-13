@@ -79,7 +79,8 @@ export function renderToSvgString(scene: Scene): string {
     `<marker id="${id}" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto">` +
     `<path d="M 0 0 L 8 4 L 0 8 z" fill="${esc(resolvePaint(paint))}"/></marker>`).join('')}</defs>`;
   const title = scene.title ? `<title>${esc(scene.title)}</title>` : '';
+  const desc = scene.description ? `<desc>${esc(scene.description)}</desc>` : '';
   const style = `width:100%;height:auto;max-width:${scene.maxWidth ?? '26rem'};margin:0 auto;display:block`;
   return `<svg xmlns="http://www.w3.org/2000/svg" class="u-scene" viewBox="0 0 ${num(scene.width)} ${num(scene.height)}" ` +
-    `role="img" style="${style}">${title}${defs}${body}</svg>`;
+    `role="img" style="${style}">${title}${desc}${defs}${body}</svg>`;
 }
