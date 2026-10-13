@@ -13,3 +13,6 @@ export type { RectSectionDiagramModel } from './rect-section.js';
 export * from './ring-section-geometry.js';
 export { ringSectionDiagram } from './ring-section.js';
 export type { RingSectionDiagramModel } from './ring-section.js';
+export * from './floor-plan-geometry.js';
+export { floorPlanDiagram } from './floor-plan.js';
+export type { FloorPlanDiagramModel } from './floor-plan.js';
