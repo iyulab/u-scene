@@ -36,8 +36,15 @@ describe('renderToSvgString', () => {
         { kind: 'text', x: 0, y: 0, text: 'b', anchor: 'start', paint: '#0ea5e9', size: 12, weight: 500, italic: true },
       ],
     });
-    expect(out).toContain('<text x="10.13" y="20" text-anchor="end" fill="var(--u-scene-muted, #64748b)" font-size="11" font-weight="600">a</text>');
-    expect(out).toContain('<text x="0" y="0" text-anchor="start" fill="#0ea5e9" font-size="12" font-weight="500" font-style="italic">b</text>');
+    const halo = 'stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke"';
+    expect(out).toContain(`<text x="10.13" y="20" text-anchor="end" fill="var(--u-scene-muted, #64748b)" ${halo} font-size="11" font-weight="600">a</text>`);
+    // A hex is a mark color too (a preset's structural ray color): text mixes it like a status tone.
+    expect(out).toContain(`<text x="0" y="0" text-anchor="start" fill="color-mix(in oklab, #0ea5e9 60%, var(--u-scene-ink-strong, #0f172a))" ${halo} font-size="12" font-weight="500" font-style="italic">b</text>`);
+  });
+
+  it('mixes a status-tone label with ink-strong, so small text keeps its hue and reaches text contrast', () => {
+    const out = renderToSvgString({ ...base, nodes: [{ kind: 'text', x: 0, y: 0, text: 'ok', anchor: 'start', paint: 'success' }] });
+    expect(out).toContain('fill="color-mix(in oklab, var(--u-scene-success, #22c55e) 60%, var(--u-scene-ink-strong, #0f172a))"');
   });
 
   it('renders shapes with fill, stroke and dash', () => {

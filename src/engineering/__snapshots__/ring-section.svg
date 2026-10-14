@@ -14,10 +14,10 @@
 <path d="M 43.00 46.00 L 207.00 46.00 M 43.00 42.00 L 43.00 50.00 M 207.00 42.00 L 207.00 50.00" fill="none" stroke="var(--u-scene-muted, #64748b)" stroke-width="1"/>
 <path d="M 79.90 140.00 L 170.10 140.00 M 79.90 136.00 L 79.90 144.00 M 170.10 136.00 L 170.10 144.00" fill="none" stroke="var(--u-scene-muted, #64748b)" stroke-width="1"/>
 <path d="M 170.10 140.00 L 207.00 140.00 M 170.10 136.00 L 170.10 144.00 M 207.00 136.00 L 207.00 144.00" fill="none" stroke="var(--u-scene-muted, #64748b)" stroke-width="1"/>
-<text x="125" y="38" text-anchor="middle" fill="var(--u-scene-ink-strong, #0f172a)" font-size="11" font-weight="600">OD 200</text>
-<text x="217" y="162" text-anchor="start" fill="var(--u-scene-ink-strong, #0f172a)" font-size="11" font-weight="600">ID 110</text>
-<text x="217" y="144" text-anchor="start" fill="var(--u-scene-ink-strong, #0f172a)" font-size="11" font-weight="600">wall 45</text>
-<text x="217" y="180" text-anchor="start" fill="var(--u-scene-ink-strong, #0f172a)" font-size="11" font-weight="600">PCD 170</text>
-<text x="217" y="198" text-anchor="start" fill="var(--u-scene-ink-strong, #0f172a)" font-size="11" font-weight="600">8 x M16</text>
-<text x="125" y="244" text-anchor="middle" fill="var(--u-scene-ink-strong, #0f172a)" font-size="11" font-weight="700">face view</text>
+<text x="125" y="38" text-anchor="middle" fill="var(--u-scene-ink-strong, #0f172a)" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">OD 200</text>
+<text x="217" y="162" text-anchor="start" fill="var(--u-scene-ink-strong, #0f172a)" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">ID 110</text>
+<text x="217" y="144" text-anchor="start" fill="var(--u-scene-ink-strong, #0f172a)" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">wall 45</text>
+<text x="217" y="180" text-anchor="start" fill="var(--u-scene-ink-strong, #0f172a)" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">PCD 170</text>
+<text x="217" y="198" text-anchor="start" fill="var(--u-scene-ink-strong, #0f172a)" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">8 x M16</text>
+<text x="125" y="244" text-anchor="middle" fill="var(--u-scene-ink-strong, #0f172a)" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="700">face view</text>
 </svg>

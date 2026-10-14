@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-14
+
+### Fixed
+
+- **Text labels reach text contrast.** A label drawn in a mark color - a status tone, or a preset's
+  structural hex such as the angle rays' orange - used that color as is, which is 2.2-4.5:1 on white
+  paper (WCAG 1.4.3 asks 4.5:1 for small text). Text now mixes a mark color with `ink-strong`
+  (`color-mix(in oklab, <mark> 60%, <ink-strong>)`), so a label keeps the hue of the mark it names and
+  gains contrast in both themes: `ink-strong` is the darkest text on a light paper and the lightest on a
+  dark one, as a host already sets it, so no new custom property is needed. Measured in a host page:
+  5.1-5.8:1 on a light paper (was 2.2-2.7:1), 9.6-10.7:1 on a dark one. The neutral tones (`ink`,
+  `ink-strong`, `muted`, `faint`, `line`, `paper`) are text colors and are unchanged.
+- **Labels stay legible across lines.** Every text node carries a paper-colored halo
+  (`stroke` = `paper`, width 3, `paint-order: stroke`), so a label that crosses a ray or a dashed line
+  no longer loses its glyphs to it.
+
+### Added
+
+- `resolveTextPaint(paint)` and `TEXT_TONE_SHARE` (the 60 % share of the mark color).
+
 ## [0.1.1] - 2026-10-13
 
 Released outside the regular release gate: a downstream consumer was blocked - its pages

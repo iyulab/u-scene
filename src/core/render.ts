@@ -1,5 +1,5 @@
 import { assertScene } from './validate.js';
-import { resolvePaint } from './paint.js';
+import { resolvePaint, resolveTextPaint } from './paint.js';
 import type { Fill, Paint, Scene, SceneNode, Stroke } from './types.js';
 
 const XML_ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -44,7 +44,9 @@ function renderNode(n: SceneNode, markers: Map<string, Paint>): string {
   switch (n.kind) {
     case 'text': {
       const italic = n.italic ? ' font-style="italic"' : '';
-      return `<text x="${num(n.x)}" y="${num(n.y)}" text-anchor="${n.anchor}" fill="${esc(resolvePaint(n.paint))}" ` +
+      // A paper-colored halo under the glyphs keeps a label legible where it crosses a line or a ray.
+      return `<text x="${num(n.x)}" y="${num(n.y)}" text-anchor="${n.anchor}" fill="${esc(resolveTextPaint(n.paint))}" ` +
+        `stroke="${esc(resolvePaint('paper'))}" stroke-width="3" stroke-linejoin="round" paint-order="stroke" ` +
         `font-size="${num(n.size ?? 11)}" font-weight="${n.weight ?? 600}"${italic}${idAttr(n.id)}>${esc(n.text)}</text>`;
     }
     case 'path': {

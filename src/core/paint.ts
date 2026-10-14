@@ -31,3 +31,23 @@ export function resolvePaint(paint: Paint): string {
   if (HEX.test(paint)) return paint;
   throw new TypeError(`u-scene: invalid paint "${String(paint)}" - use a tone name or a hex color`);
 }
+
+/** The neutral tones are text colors; every other paint is a mark color. */
+const TEXT_TONES: ReadonlySet<Tone> = new Set<Tone>(['ink', 'ink-strong', 'muted', 'faint', 'line', 'paper']);
+
+/** Share of the mark color in a text label; the rest is `ink-strong`. */
+export const TEXT_TONE_SHARE = 60;
+
+/**
+ * The CSS color a text label renders as. A mark color - a status tone, or a preset's structural hex
+ * such as the angle rays' orange - is chosen to read as a stroke or a fill, and at that brightness
+ * it is 2.2-4.5:1 on white paper, under the 4.5:1 that small text needs (WCAG 1.4.3). Text therefore
+ * mixes it with `ink-strong` - the darkest text on a light paper and the lightest on a dark one, as
+ * each host already sets it - so a label keeps the hue of the mark it names and gains contrast in
+ * both themes without a token of its own: 60/40 gives 5.1:1 or more on white and 7.5:1 or more on
+ * slate-900 for the default tones. The neutral tones are text colors already and pass through.
+ */
+export function resolveTextPaint(paint: Paint): string {
+  if (isTone(paint) && TEXT_TONES.has(paint)) return resolvePaint(paint);
+  return `color-mix(in oklab, ${resolvePaint(paint)} ${TEXT_TONE_SHARE}%, ${resolvePaint('ink-strong')})`;
+}
