@@ -16,3 +16,6 @@ export type { RingSectionDiagramModel } from './ring-section.js';
 export * from './floor-plan-geometry.js';
 export { floorPlanDiagram, FLOOR_PLAN_MAX_FIXTURES } from './floor-plan.js';
 export type { FloorPlanDiagramModel } from './floor-plan.js';
+export * from './gear-mesh-geometry.js';
+export { gearMeshDiagram } from './gear-mesh.js';
+export type { GearMeshDiagramModel } from './gear-mesh.js';

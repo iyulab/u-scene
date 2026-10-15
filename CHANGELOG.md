@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`gearMeshDiagram`** (engineering): one gear, or a driver and a driven gear meshing at the pitch
+  point - pitch circle (dash-dot), tip and root circles when given, centre marks, the pitch point,
+  opposite rotation arrows and the centre-distance dimension, all on one scale. A pitch circle smaller
+  than `GEAR_MESH_MIN_RADIUS_PX` is enlarged on its own and the drawing is marked not to scale. Tooth
+  counts can stand in for pitch diameters when only the ratio is known. Geometry:
+  `gearMeshGeometry(input, view)`.
+
 ## [0.1.2] - 2026-10-14
 
 ### Fixed

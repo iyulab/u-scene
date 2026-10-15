@@ -7,6 +7,7 @@ import { threadProfileDiagram } from './thread-profile.js';
 import { rectSectionDiagram } from './rect-section.js';
 import { ringSectionDiagram } from './ring-section.js';
 import { floorPlanDiagram } from './floor-plan.js';
+import { gearMeshDiagram } from './gear-mesh.js';
 
 /** One element per line, so a snapshot diff points at the node whose paint, dash or order changed. */
 function svgOf(scene: Scene | null): string {
@@ -95,5 +96,15 @@ describe('preset SVG snapshots', () => {
       title: 'Floor plan',
     }));
     await expect(svg).toMatchFileSnapshot('./__snapshots__/floor-plan.svg');
+  });
+
+  it('gearMeshDiagram', async () => {
+    const svg = svgOf(gearMeshDiagram({
+      driver: { pitchDiameter: 40, tipDiameter: 44, rootDiameter: 35 },
+      driven: { pitchDiameter: 80, tipDiameter: 84, rootDiameter: 75 },
+      labels: { driver: 'z1 20 · d1 40', driven: 'z2 40 · d2 80', centerDistance: 'a 60', notToScale: 'not to scale' },
+      title: 'Gear mesh',
+    }));
+    await expect(svg).toMatchFileSnapshot('./__snapshots__/gear-mesh.svg');
   });
 });

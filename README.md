@@ -48,11 +48,16 @@ Tones: `ink`, `ink-strong`, `muted`, `faint`, `line`, `paper`, `primary`, `accen
 ## Engineering presets
 
 `angleDiagram`, `bendSectionDiagram`, `threadProfileDiagram`, `rectSectionDiagram`,
-`ringSectionDiagram`, `floorPlanDiagram` - each takes a model of values and pre-formatted
-labels and returns a scene. `angleDiagram` returns `null` when there are no rays to draw, and
+`ringSectionDiagram`, `floorPlanDiagram`, `gearMeshDiagram` - each takes a model of values and
+pre-formatted labels and returns a scene. `angleDiagram` returns `null` when there are no rays to draw, and
 `floorPlanDiagram` returns `null` when `fixtureCount` is zero or less, or above
 `FLOOR_PLAN_MAX_FIXTURES` (638 - beyond it the markers touch in every room shape, so the
 plan could no longer show the count).
+
+`gearMeshDiagram` draws one gear, or a driver and a driven gear tangent at the pitch point, as
+circles on one scale (pitch, and tip and root when given) with opposite rotation arrows and the
+centre-distance dimension. When only the ratio is known, pass tooth counts as pitch diameters -
+at equal module they are proportional.
 
 ## Rules
 
