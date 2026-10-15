@@ -11,7 +11,7 @@ export interface GearMeshDiagramModel {
     /** One row under the drawing, e.g. «z₁ = 20 · d₁ = 40 mm». */
     driver: string;
     driven?: string;
-    /** Under the centre-distance dimension (pairs only). */
+    /** Under the centre-distance dimension (pairs only); without it the dimension is not drawn. */
     centerDistance?: string;
     notToScale: string;
   };
@@ -61,8 +61,13 @@ export function gearMeshDiagram(m: GearMeshDiagramModel): Scene {
   const nodes: SceneNode[] = [...gearNodes(g.driver, TONE.driver)];
   if (g.driven) nodes.push(...gearNodes(g.driven, TONE.driven));
   if (g.pitchPoint) nodes.push({ kind: 'circle', cx: g.pitchPoint.x, cy: g.pitchPoint.y, r: 2.5, fill: { paint: 'ink-strong' } });
-  if (g.centerDimPath) nodes.push({ kind: 'path', d: g.centerDimPath, stroke: { paint: 'muted', width: 1 } });
-  if (g.driven && m.labels.centerDistance) nodes.push({ kind: 'text', ...g.centerDimLabel, text: m.labels.centerDistance, paint: 'ink-strong' });
+  // A dimension line says nothing without its value — in ratio mode (tooth counts) there is no distance to state.
+  if (g.centerDimPath && m.labels.centerDistance) {
+    nodes.push(
+      { kind: 'path', d: g.centerDimPath, stroke: { paint: 'muted', width: 1 } },
+      { kind: 'text', ...g.centerDimLabel, text: m.labels.centerDistance, paint: 'ink-strong' },
+    );
+  }
   nodes.push({ kind: 'text', ...g.gearLabels[0], text: m.labels.driver, paint: TONE.driver });
   if (g.driven && m.labels.driven) nodes.push({ kind: 'text', ...g.gearLabels[1], text: m.labels.driven, paint: TONE.driven });
   if (g.clamped) nodes.push({ kind: 'text', ...g.notToScaleLabel, text: m.labels.notToScale, paint: 'muted', weight: 500, italic: true });

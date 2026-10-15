@@ -69,6 +69,13 @@ describe('gearMeshDiagram', () => {
     expect(circles.filter((c) => c.fill?.opacity === 0.14)).toHaveLength(2);
   });
 
+  it('draws no centre-distance dimension without its label (ratio mode)', () => {
+    const m: GearMeshDiagramModel = { driver: { pitchDiameter: 12 }, driven: { pitchDiameter: 36 }, labels: { driver: 'z1', driven: 'z2', notToScale: 'nts' } };
+    const paths = gearMeshDiagram(m).nodes.filter((n): n is PathNode => n.kind === 'path' && !n.markerEnd);
+    // centre marks only
+    expect(paths).toHaveLength(2);
+  });
+
   it('omits the driven label and centre distance for a single gear', () => {
     const m: GearMeshDiagramModel = { driver: pair.driver, labels };
     expect(texts(m)).toEqual([labels.driver]);

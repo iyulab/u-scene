@@ -1,5 +1,5 @@
 /** Package version, kept in step with package.json by the release task. */
-export const VERSION = '0.1.2';
+export const VERSION = '0.2.0';
 
 export { TONES } from './core/types.js';
 export type { Tone, HexColor, Paint, Stroke, Fill, PathNode, LineNode, CircleNode, RectNode, TextNode, SceneNode, Scene } from './core/types.js';
