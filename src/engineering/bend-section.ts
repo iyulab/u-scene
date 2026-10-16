@@ -1,4 +1,5 @@
 import type { Scene, SceneNode } from '../core/types.js';
+import type { Handle } from '../core/handles.js';
 import { finite, nonNegative, positive } from './model-checks.js';
 import { bendSectionGeometry } from './bend-section-geometry.js';
 import type { BendSectionView } from './bend-section-geometry.js';
@@ -16,6 +17,22 @@ export interface BendSectionDiagramModel {
   kFactorMax?: number;
   labels: { thickness: string; insideRadius: string; bendAngle: string; neutralAxis?: string };
   title?: string;
+  /**
+   * Handles for the two inputs the figure shows directly. Each gives the input's range, its
+   * accessible label and the current value as the host formats it; the preset places the handle
+   * on the figure (inside apex / outside tangent point) and builds its track.
+   */
+  handles?: { insideRadius?: BendHandleSpec; bendAngle?: BendHandleSpec };
+}
+
+export interface BendHandleSpec {
+  /** Range of the input, min < max. */
+  min: number;
+  max: number;
+  /** One arrow-key step in input units (default a hundredth of the range). */
+  step?: number;
+  label: string;
+  valueText: string;
 }
 
 const VIEW: BendSectionView = { width: 340, height: 260, padding: 36 };
@@ -36,6 +53,10 @@ export function bendSectionDiagram(m: BendSectionDiagramModel): Scene {
     kFactor: m.kFactor,
     kFactorMin: m.kFactorMin,
     kFactorMax: m.kFactorMax,
+    handleRanges: {
+      ...(m.handles?.insideRadius ? { insideRadius: [m.handles.insideRadius.min, m.handles.insideRadius.max] as const } : {}),
+      ...(m.handles?.bendAngle ? { bendAngle: [m.handles.bendAngle.min, m.handles.bendAngle.max] as const } : {}),
+    },
   }, VIEW);
 
   const nodes: SceneNode[] = [
@@ -55,5 +76,15 @@ export function bendSectionDiagram(m: BendSectionDiagramModel): Scene {
   );
   if (g.neutralLabel && m.labels.neutralAxis != null) nodes.push({ kind: 'text', ...g.neutralLabel, text: m.labels.neutralAxis, paint: 'accent', weight: 700 });
 
-  return { width: VIEW.width, height: VIEW.height, ...(m.title ? { title: m.title } : {}), nodes };
+  const handles: Handle[] = [];
+  const add = (id: 'insideRadius' | 'bendAngle', value: number) => {
+    const spec = m.handles?.[id];
+    const track = g.handleTracks[id];
+    if (!spec || !track) return;
+    handles.push({ id, param: id, value, track, ...(spec.step !== undefined ? { step: spec.step } : {}), label: spec.label, valueText: spec.valueText });
+  };
+  add('insideRadius', m.insideRadiusMm);
+  add('bendAngle', m.bendAngleDeg);
+
+  return { width: VIEW.width, height: VIEW.height, ...(m.title ? { title: m.title } : {}), nodes, ...(handles.length ? { handles } : {}) };
 }

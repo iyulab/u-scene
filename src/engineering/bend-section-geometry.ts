@@ -10,6 +10,7 @@
  * thicknessPx and neutralRadiusPx expose this consistency so tests can assert it directly.
  */
 import { clampAnchoredX, polarPoint } from '../core/geometry.js';
+import type { HandleStop } from '../core/handles.js';
 import type { LabelPlacement, Point } from '../core/geometry.js';
 
 /** Lower bound of the bend-angle domain (degrees): 0 is a flat sheet. */
@@ -38,6 +39,11 @@ export interface BendSectionInput {
    */
   kFactorMin?: number;
   kFactorMax?: number;
+  /**
+   * Value ranges for handle tracks (`[min, max]`, min < max). Each given range yields a track in
+   * `handleTracks`, built in the current figure's frame so the current value sits on the figure.
+   */
+  handleRanges?: { insideRadius?: readonly [number, number]; bendAngle?: readonly [number, number] };
 }
 
 export interface BendSectionView {
@@ -77,7 +83,17 @@ export interface BendSectionGeometry {
   thicknessPx: number;
   /** Null without `kFactor`. */
   neutralRadiusPx: number | null;
+  /**
+   * Handle tracks for the ranges asked for: the inside radius moves the inside apex straight down
+   * from the centre of curvature; the bend angle moves the right outside tangent point along the
+   * outside arc. Both follow the figure's own normalisation (the outside radius is fixed), so a
+   * track is not linear in its value — it is sampled.
+   */
+  handleTracks: { insideRadius?: HandleStop[]; bendAngle?: HandleStop[] };
 }
+
+/** Samples per handle track — enough that the polyline reads as the curve it follows. */
+const BEND_TRACK_SAMPLES = 37;
 
 /** Reference radius from the centre of curvature to the outer surface (px, before fit). The real size is re-scaled uniformly by the fit. */
 const BEND_OUTER_R_BASE = 64;
@@ -216,7 +232,31 @@ export function bendSectionGeometry(input: BendSectionInput, view: BendSectionVi
   const radiusLabel: LabelPlacement = { x: T(rMid).x - BEND_LABEL_GAP, y: T(rMid).y, anchor: 'end' };
   const angleLabel: LabelPlacement = { ...T(at(arcR + BEND_LABEL_GAP / fit, -90)), anchor: 'middle' };
 
+  // ── handle tracks, in this figure's frame (same raw construction, same T) ──
+  // The current value is a stop of its own: between samples the polyline is a chord of a curve,
+  // and the handle must sit exactly on the figure, not on the chord.
+  const sample = (range: readonly [number, number], current: number, at: (v: number) => Point): HandleStop[] | undefined => {
+    const [lo, hi] = range;
+    if (!(Number.isFinite(lo) && Number.isFinite(hi) && lo < hi)) return undefined;
+    const values = Array.from({ length: BEND_TRACK_SAMPLES }, (_, i) => lo + ((hi - lo) * i) / (BEND_TRACK_SAMPLES - 1));
+    if (current > lo && current < hi && !values.includes(current)) values.push(current);
+    return values.sort((a, b) => a - b).map((value) => ({ value, ...T(at(value)) }));
+  };
+  const handleTracks: BendSectionGeometry['handleTracks'] = {};
+  const ranges = input.handleRanges;
+  if (ranges?.insideRadius) {
+    // The outside radius is the fixed reference (BEND_OUTER_R_BASE), so an inside radius r' sits
+    // at BEND_OUTER_R_BASE * r' / (r' + t) — the apex position the figure would show for it.
+    const track = sample(ranges.insideRadius, input.insideRadiusMm, (r) => at(BEND_OUTER_R_BASE * Math.max(0, r) / (Math.max(0, r) + t || 1), -90));
+    if (track) handleTracks.insideRadius = track;
+  }
+  if (ranges?.bendAngle) {
+    const track = sample(ranges.bendAngle, input.bendAngleDeg, (b) => at(roPx, -90 + bendClampAngle(b) / 2));
+    if (track) handleTracks.bendAngle = track;
+  }
+
   return {
+    handleTracks,
     materialPath, neutralPath, neutralBandPath, angleArcPath, angleRadii, thicknessTick, radiusTick,
     thicknessLabel, radiusLabel, angleLabel, neutralLabel,
     scale: sBase * fit, insideRadiusPx: R(riPx), thicknessPx: R(tPx), neutralRadiusPx: hasNeutral ? R(rnPx) : null,

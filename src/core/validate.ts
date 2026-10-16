@@ -94,4 +94,20 @@ export function assertScene(scene: Scene): void {
   if (scene.description !== undefined && typeof scene.description !== 'string') fail('description', `must be a string (got ${typeof scene.description})`);
   if (scene.maxWidth !== undefined && !REM.test(scene.maxWidth)) fail('maxWidth', `must be a rem length (got "${scene.maxWidth}")`);
   scene.nodes.forEach((n, i) => node(n, `nodes[${i}]`));
+  const ids = new Set<string>();
+  scene.handles?.forEach((h, i) => {
+    const at = `handles[${i}]`;
+    if (typeof h.id !== 'string' || !ID.test(h.id)) fail(`${at}.id`, `must be a plain identifier (got ${JSON.stringify(h.id)})`);
+    if (ids.has(h.id)) fail(`${at}.id`, `must be unique (got "${h.id}" twice)`);
+    ids.add(h.id);
+    if (typeof h.param !== 'string' || h.param === '') fail(`${at}.param`, 'must be a non-empty string');
+    if (typeof h.label !== 'string' || typeof h.valueText !== 'string') fail(at, 'label and valueText must be strings');
+    finite(h.value, `${at}.value`);
+    if (h.step !== undefined) { finite(h.step, `${at}.step`); if (h.step <= 0) fail(`${at}.step`, `must be greater than 0 (got ${h.step})`); }
+    if (!Array.isArray(h.track) || h.track.length < 2) fail(`${at}.track`, 'must have at least two stops');
+    h.track.forEach((s, j) => {
+      finite(s.value, `${at}.track[${j}].value`); finite(s.x, `${at}.track[${j}].x`); finite(s.y, `${at}.track[${j}].y`);
+      if (j > 0 && !(s.value > h.track[j - 1].value)) fail(`${at}.track[${j}].value`, 'must be greater than the value of the stop before it');
+    });
+  });
 }

@@ -1,3 +1,5 @@
+import type { Handle } from './handles.js';
+
 /** Semantic color names. Each resolves to `var(--u-scene-<tone>, <default>)`, so a host
  *  can theme every scene (including dark mode) by setting those custom properties. */
 export const TONES = [
@@ -93,4 +95,9 @@ export interface Scene {
   /** CSS max-width of the rendered SVG, a rem length. Default `26rem`. */
   maxWidth?: string;
   nodes: readonly SceneNode[];
+  /**
+   * Controls of host inputs drawn over the scene by `<u-scene>` (see `handles.ts`). Never part of
+   * `renderToSvgString` — a static drawing has nothing to drag.
+   */
+  handles?: readonly Handle[];
 }

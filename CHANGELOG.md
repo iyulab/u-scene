@@ -7,7 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-16
+
 ### Added
+
+- **Handles.** `Scene.handles` — controls of host inputs drawn by `<u-scene>` over the static markup
+  (never by `renderToSvgString`). A handle moves along a track of `{ value, x, y }` stops (strictly
+  increasing values, validated by `assertScene`); the element draws it as a focusable
+  `role="slider"` with `aria-valuemin/max/now/text` and the host's label, follows pointer drags
+  (tracked on the host element, so a drag survives the markup a new scene replaces) and the keys
+  (arrows one step, PageUp/PageDown ten, Home/End the bounds), keeps focus across a new scene, and
+  dispatches `u-scene-param` (`{ param, value }`, bubbling, composed). It never applies or rounds a
+  value. Pure helpers `handlePosition`, `valueAtPoint`, `steppedValue`, `trackRange` and the types
+  `Handle`, `HandleStop`, `USceneParamDetail` are exported.
+- **`bendSectionDiagram` handles** for `insideRadius` (the inside apex, moving along the radius
+  dimension) and `bendAngle` (the right outside tangent point, moving along the outside arc), from
+  `handles: { insideRadius?, bendAngle? }` (range, step, label, value text). The tracks follow the
+  figure's own normalisation and include the current value as an exact stop, so the handle sits on
+  the figure. Geometry: `handleRanges` in, `handleTracks` out.
+- **`linearDimensionNodes`** (engineering): a drafting-style linear dimension — extension lines,
+  a dimension line with an arrow at each end, the label at its middle — as primitive nodes a preset
+  composes into any scene.
 
 - **Signed angles.** `angleDiagram({ signed: true })` draws angles below the baseline too, over
   [`RAY_ANGLE_SIGNED_MIN_DEG`, `RAY_ANGLE_MAX_DEG`] = [-90, 210] degrees, on `RAY_VIEW_SIGNED`

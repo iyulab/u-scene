@@ -1,8 +1,8 @@
 # u-scene
 
 Declarative engineering scenes for the web: parametric diagrams from plain data, rendered to
-a static SVG string or a `<u-scene>` element. Interactive handles and simulation playback are
-planned for 0.2.
+a static SVG string or a `<u-scene>` element, which can also draw handles that let a reader set
+an input from the drawing itself.
 
 A scene is plain data. The same scene renders to a static SVG string (no DOM, safe at build
 time) and to a `<u-scene>` element, which draws through that same function.
@@ -31,6 +31,20 @@ Status: 0.x - the API changes between minor versions.
     import '@iyulab/u-scene/element';
     // <u-scene .scene=${scene}></u-scene>   (Lit)
     element.scene = scene;                 // plain DOM
+
+## Handles
+
+A scene may carry `handles`: each sets one host input from the drawing. A handle moves along a
+track of `{ value, x, y }` stops that the preset builds from the same transform that drew the
+figure, so it always sits on what it controls. `<u-scene>` draws each as a focusable
+`role="slider"` (pointer drag; arrows, PageUp/PageDown, Home/End) and dispatches `u-scene-param`
+with `{ param, value }`. The host owns the value: it sets its input from the event and passes a new
+scene. Values are never rounded here, and the static SVG never contains handles.
+
+    const scene = bendSectionDiagram({ ...model, handles: {
+      insideRadius: { min: 0, max: 30, step: 0.5, label: 'Inside radius', valueText: '6 mm' },
+    } });
+    element.addEventListener('u-scene-param', (e) => setInput(e.detail.param, e.detail.value));
 
 ## Theming
 
