@@ -66,7 +66,7 @@ at equal module they are proportional.
 - Presets reject non-finite or out-of-range model values with a `TypeError`.
 - `angleDiagram` draws angles from `RAY_ANGLE_MIN_DEG` to `RAY_ANGLE_MAX_DEG` (0 to 210
   degrees), or from `RAY_ANGLE_SIGNED_MIN_DEG` (-90) with `signed: true` - a downhill grade or a
-  negative springback drawn below the baseline on a taller view. It throws a `RangeError` for a
+  deviation under the reference drawn below the baseline on a taller view. It throws a `RangeError` for a
   ray, band edge or delta angle outside the chosen range - it never clamps an angle into a wrong
   drawing. Check values with `isDrawableAngle(deg, { signed })` and omit the diagram when one
   falls outside.

@@ -65,7 +65,7 @@ export const RAY_VIEW: RayLabelView = { cx: 170, cy: 190, r: 110, width: 340, he
 /**
  * Lower bound of the signed ray angle domain (degrees): -90, straight down. A signed diagram
  * (`angleDiagram({ signed: true })`) draws angles below the baseline as well — a downhill grade,
- * a negative springback, a deviation under the reference — over [RAY_ANGLE_SIGNED_MIN_DEG,
+ * a deviation under the reference, an angle measured downward — over [RAY_ANGLE_SIGNED_MIN_DEG,
  * RAY_ANGLE_MAX_DEG] = [-90, 210]. The default diagram keeps [0, 210].
  */
 export const RAY_ANGLE_SIGNED_MIN_DEG = -90;
