@@ -10,7 +10,8 @@ export interface BendSectionDiagramModel {
   /** Neutral-axis factor (0-1). Optional: without it no neutral axis is drawn - a value
    *  the host did not compute is never invented. */
   kFactor?: number;
-  /** Uncertainty band on the same scale; drawn only when both are present. */
+  /** Uncertainty band on the same scale; drawn only when both are present. Without `kFactor` the
+   *  band is drawn alone, with no centre line. */
   kFactorMin?: number;
   kFactorMax?: number;
   labels: { thickness: string; insideRadius: string; bendAngle: string; neutralAxis?: string };
@@ -28,13 +29,11 @@ export function bendSectionDiagram(m: BendSectionDiagramModel): Scene {
   if (m.kFactor != null) finite(m.kFactor, 'bendSectionDiagram kFactor');
   if (m.kFactorMin != null) finite(m.kFactorMin, 'bendSectionDiagram kFactorMin');
   if (m.kFactorMax != null) finite(m.kFactorMax, 'bendSectionDiagram kFactorMax');
-  const showNeutral = m.kFactor != null && m.labels.neutralAxis != null;
   const g = bendSectionGeometry({
     thicknessMm: m.thicknessMm,
     insideRadiusMm: m.insideRadiusMm,
     bendAngleDeg: m.bendAngleDeg,
-    // The arc radius needs some factor; mid-thickness is used but not drawn when absent.
-    kFactor: m.kFactor ?? 0.5,
+    kFactor: m.kFactor,
     kFactorMin: m.kFactorMin,
     kFactorMax: m.kFactorMax,
   }, VIEW);
@@ -46,7 +45,7 @@ export function bendSectionDiagram(m: BendSectionDiagramModel): Scene {
     { kind: 'path', d: g.angleArcPath, stroke: { paint: 'muted', width: 1.25 } },
   ];
   if (g.neutralBandPath) nodes.push({ kind: 'path', d: g.neutralBandPath, fill: { paint: 'accent', opacity: 0.18 } });
-  if (showNeutral) nodes.push({ kind: 'path', d: g.neutralPath, stroke: { paint: 'accent', width: 1.5, dash: [6, 4] } });
+  if (g.neutralPath && m.labels.neutralAxis != null) nodes.push({ kind: 'path', d: g.neutralPath, stroke: { paint: 'accent', width: 1.5, dash: [6, 4] } });
   nodes.push(
     { kind: 'path', d: g.thicknessTick, stroke: { paint: 'muted', width: 1.25 } },
     { kind: 'path', d: g.radiusTick, stroke: { paint: 'muted', width: 1.25 } },
@@ -54,7 +53,7 @@ export function bendSectionDiagram(m: BendSectionDiagramModel): Scene {
     { kind: 'text', ...g.radiusLabel, text: m.labels.insideRadius, paint: 'ink-strong' },
     { kind: 'text', ...g.angleLabel, text: m.labels.bendAngle, paint: 'ink-strong' },
   );
-  if (showNeutral) nodes.push({ kind: 'text', ...g.neutralLabel, text: m.labels.neutralAxis!, paint: 'accent', weight: 700 });
+  if (g.neutralLabel && m.labels.neutralAxis != null) nodes.push({ kind: 'text', ...g.neutralLabel, text: m.labels.neutralAxis, paint: 'accent', weight: 700 });
 
   return { width: VIEW.width, height: VIEW.height, ...(m.title ? { title: m.title } : {}), nodes };
 }

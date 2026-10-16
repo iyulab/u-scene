@@ -24,12 +24,17 @@ export interface BendSectionInput {
   insideRadiusMm: number;
   /** Bend angle (degrees) - the angle the material turns through (90 = a right-angle bend). [0, 180]. */
   bendAngleDeg: number;
-  /** Neutral-axis position factor (0-1): k*t outward from the inside surface. */
-  kFactor: number;
+  /**
+   * Neutral-axis position factor (0-1): k*t outward from the inside surface. Optional: without it
+   * there is no neutral axis — `neutralPath`, `neutralLabel` and `neutralRadiusPx` are null, and no
+   * stand-in value is used for them.
+   */
+  kFactor?: number;
   /**
    * Lower and upper bounds of the neutral-axis uncertainty band (0-1, same scale as
    * `kFactor`). The band is drawn only when **both** are present: a range that was not
-   * computed is never invented around a single value.
+   * computed is never invented around a single value. A band without `kFactor` is a supported
+   * model — the range is drawn, with no centre line inside it.
    */
   kFactorMin?: number;
   kFactorMax?: number;
@@ -45,8 +50,8 @@ export interface BendSectionView {
 export interface BendSectionGeometry {
   /** Closed outline of the material band (fill). */
   materialPath: string;
-  /** Neutral axis (dashed): left flange extension, neutral arc, right flange extension. */
-  neutralPath: string;
+  /** Neutral axis (dashed): left flange extension, neutral arc, right flange extension. Null without `kFactor`. */
+  neutralPath: string | null;
   /**
    * Closed outline of the neutral-axis uncertainty band (fill). Filled only when both
    * `kFactorMin` and `kFactorMax` were given; otherwise an empty string and the renderer
@@ -64,12 +69,14 @@ export interface BendSectionGeometry {
   thicknessLabel: LabelPlacement;
   radiusLabel: LabelPlacement;
   angleLabel: LabelPlacement;
-  neutralLabel: LabelPlacement;
+  /** Null without `kFactor`. */
+  neutralLabel: LabelPlacement | null;
   /** Scale-consistency fields, exposed for tests and regression protection. */
   scale: number;
   insideRadiusPx: number;
   thicknessPx: number;
-  neutralRadiusPx: number;
+  /** Null without `kFactor`. */
+  neutralRadiusPx: number | null;
 }
 
 /** Reference radius from the centre of curvature to the outer surface (px, before fit). The real size is re-scaled uniformly by the fit. */
@@ -95,7 +102,8 @@ export function bendSectionGeometry(input: BendSectionInput, view: BendSectionVi
   const beta = bendClampAngle(input.bendAngleDeg);
   const t = Math.max(0, input.thicknessMm);
   const ri = Math.max(0, input.insideRadiusMm);
-  const k = Math.min(1, Math.max(0, input.kFactor));
+  const hasNeutral = input.kFactor != null;
+  const k = hasNeutral ? Math.min(1, Math.max(0, input.kFactor!)) : 0; // read only when hasNeutral
 
   // ── raw radii (O at the origin, before fit). One scale, sBase, preserves the ratio ──
   const denom = ri + t || 1; // guards the degenerate all-zero input (the figure is empty but nothing throws)
@@ -106,8 +114,8 @@ export function bendSectionGeometry(input: BendSectionInput, view: BendSectionVi
   const rnPx = riPx + k * tPx;
   // The band exists only when both kFactorMin and kFactorMax are given; clamped like kFactor ([0, 1]).
   const hasBand = input.kFactorMin != null && input.kFactorMax != null;
-  const kMin = hasBand ? Math.min(1, Math.max(0, input.kFactorMin!)) : k;
-  const kMax = hasBand ? Math.min(1, Math.max(0, input.kFactorMax!)) : k;
+  const kMin = hasBand ? Math.min(1, Math.max(0, input.kFactorMin!)) : 0; // read only when hasBand
+  const kMax = hasBand ? Math.min(1, Math.max(0, input.kFactorMax!)) : 0;
   const rnPxMin = riPx + kMin * tPx;
   const rnPxMax = riPx + kMax * tPx;
 
@@ -132,8 +140,7 @@ export function bendSectionGeometry(input: BendSectionInput, view: BendSectionVi
   const riTip = along(priIn, dR, BEND_FLANGE_LEN), roTip = along(proOut, dR, BEND_FLANGE_LEN);
   const liTip = along(pliIn, dL, BEND_FLANGE_LEN), loTip = along(ploOut, dL, BEND_FLANGE_LEN);
   const rnTip = along(prN, dR, BEND_FLANGE_LEN), lnTip = along(plN, dL, BEND_FLANGE_LEN);
-  // band tangent points and flange ends (lower and upper bound); without a band they equal
-  // rnPx, so the duplicates are harmless.
+  // band tangent points and flange ends (lower and upper bound); without a band they are not read.
   const prNMin = at(rnPxMin, thetaR), plNMin = at(rnPxMin, thetaL);
   const prNMax = at(rnPxMax, thetaR), plNMax = at(rnPxMax, thetaL);
   const rnTipMin = along(prNMin, dR, BEND_FLANGE_LEN), lnTipMin = along(plNMin, dL, BEND_FLANGE_LEN);
@@ -146,7 +153,8 @@ export function bendSectionGeometry(input: BendSectionInput, view: BendSectionVi
 
   // ── bounding box -> uniform fit to the viewport ──
   const all: Point[] = [
-    proOut, ploOut, priIn, pliIn, roTip, riTip, loTip, liTip, rnTip, lnTip, apex, O, arcL, arcRp,
+    proOut, ploOut, priIn, pliIn, roTip, riTip, loTip, liTip, apex, O, arcL, arcRp,
+    ...(hasNeutral ? [rnTip, lnTip] : []),
     ...(hasBand ? [rnTipMin, lnTipMin, rnTipMax, lnTipMax] : []),
   ];
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -176,7 +184,7 @@ export function bendSectionGeometry(input: BendSectionInput, view: BendSectionVi
     `L ${c(riTip)} L ${c(priIn)} ${arcSeg(riPx, 1, pliIn)} L ${c(liTip)} Z`;
 
   // Neutral axis (dashed): left extension -> neutral arc -> right extension
-  const neutralPath = `M ${c(lnTip)} L ${c(plN)} ${arcSeg(rnPx, 0, prN)} L ${c(rnTip)}`;
+  const neutralPath = hasNeutral ? `M ${c(lnTip)} L ${c(plN)} ${arcSeg(rnPx, 0, prN)} L ${c(rnTip)}` : null;
 
   // Neutral-axis band (fill): the same out-and-back construction as materialPath - follow the
   // lower-bound arc, jump to the upper bound at the right flange, then retrace the upper-bound
@@ -203,7 +211,7 @@ export function bendSectionGeometry(input: BendSectionInput, view: BendSectionVi
   const BEND_LABEL_RESERVE = 64;
   const clampMid = (x: number): number => clampAnchoredX(x, 'middle', BEND_LABEL_RESERVE, view.width);
   const thicknessLabel: LabelPlacement = { x: clampMid(T(roTip).x), y: T(roTip).y - BEND_LABEL_GAP, anchor: 'middle' };
-  const neutralLabel: LabelPlacement = { x: clampMid(T(lnTip).x), y: T(lnTip).y - BEND_LABEL_GAP, anchor: 'middle' };
+  const neutralLabel: LabelPlacement | null = hasNeutral ? { x: clampMid(T(lnTip).x), y: T(lnTip).y - BEND_LABEL_GAP, anchor: 'middle' } : null;
   const rMid: Point = { x: apex.x / 2, y: apex.y / 2 };
   const radiusLabel: LabelPlacement = { x: T(rMid).x - BEND_LABEL_GAP, y: T(rMid).y, anchor: 'end' };
   const angleLabel: LabelPlacement = { ...T(at(arcR + BEND_LABEL_GAP / fit, -90)), anchor: 'middle' };
@@ -211,6 +219,6 @@ export function bendSectionGeometry(input: BendSectionInput, view: BendSectionVi
   return {
     materialPath, neutralPath, neutralBandPath, angleArcPath, angleRadii, thicknessTick, radiusTick,
     thicknessLabel, radiusLabel, angleLabel, neutralLabel,
-    scale: sBase * fit, insideRadiusPx: R(riPx), thicknessPx: R(tPx), neutralRadiusPx: R(rnPx),
+    scale: sBase * fit, insideRadiusPx: R(riPx), thicknessPx: R(tPx), neutralRadiusPx: hasNeutral ? R(rnPx) : null,
   };
 }

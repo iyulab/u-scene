@@ -27,14 +27,14 @@ describe('bendSectionGeometry - bent sheet cross-section', () => {
   it('neutral axis position: (Rn - Ri) px equals k * thickness px, so the K-factor is drawn honestly', () => {
     for (const k of [0, 0.3, 0.4, 0.5, 1]) {
       const g = bendSectionGeometry({ thicknessMm: 2, insideRadiusMm: 6, bendAngleDeg: 90, kFactor: k }, VIEW);
-      expect(g.neutralRadiusPx - g.insideRadiusPx, `k=${k}`).toBeCloseTo(k * g.thicknessPx, 5);
+      expect(g.neutralRadiusPx! - g.insideRadiusPx, `k=${k}`).toBeCloseTo(k * g.thicknessPx, 5);
     }
   });
 
   it('boundary angles 0 (flat), 90 and 180 (fully folded) give finite coordinates inside the viewport', () => {
     for (const beta of [0, 45, 90, 135, 180]) {
       const g = bendSectionGeometry({ thicknessMm: 2, insideRadiusMm: 6, bendAngleDeg: beta, kFactor: 0.4 }, VIEW);
-      const paths = [g.materialPath, g.neutralPath, g.angleArcPath, ...g.angleRadii, g.thicknessTick, g.radiusTick];
+      const paths = [g.materialPath, g.neutralPath!, g.angleArcPath, ...g.angleRadii, g.thicknessTick, g.radiusTick];
       for (const path of paths) {
         for (const [x, y] of pointCoords(path)) {
           expect(Number.isFinite(x) && Number.isFinite(y), `β=${beta} finite`).toBe(true);
@@ -65,6 +65,14 @@ describe('bendSectionGeometry - bent sheet cross-section', () => {
     const over = bendSectionGeometry({ thicknessMm: 2, insideRadiusMm: 6, bendAngleDeg: 250, kFactor: 0.4 }, VIEW);
     const at180 = bendSectionGeometry({ thicknessMm: 2, insideRadiusMm: 6, bendAngleDeg: 180, kFactor: 0.4 }, VIEW);
     expect(over.materialPath).toBe(at180.materialPath);
+  });
+
+  it('without kFactor the geometry has no neutral axis — nothing stands in for the value', () => {
+    const g = bendSectionGeometry({ thicknessMm: 2, insideRadiusMm: 6, bendAngleDeg: 90 }, VIEW);
+    expect([g.neutralPath, g.neutralLabel, g.neutralRadiusPx]).toEqual([null, null, null]);
+    const withK = bendSectionGeometry({ thicknessMm: 2, insideRadiusMm: 6, bendAngleDeg: 90, kFactor: 0.4 }, VIEW);
+    // The neutral axis lies inside the material, so its presence does not move the fit.
+    expect(g.materialPath).toBe(withK.materialPath);
   });
 
   describe('neutral-axis band (kFactorMin / kFactorMax)', () => {

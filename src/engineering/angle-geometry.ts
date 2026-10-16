@@ -62,6 +62,39 @@ export const RAY_ANGLE_MAX_DEG = 210;
  */
 export const RAY_VIEW: RayLabelView = { cx: 170, cy: 190, r: 110, width: 340, height: 300 };
 
+/**
+ * Lower bound of the signed ray angle domain (degrees): -90, straight down. A signed diagram
+ * (`angleDiagram({ signed: true })`) draws angles below the baseline as well — a downhill grade,
+ * a negative springback, a deviation under the reference — over [RAY_ANGLE_SIGNED_MIN_DEG,
+ * RAY_ANGLE_MAX_DEG] = [-90, 210]. The default diagram keeps [0, 210].
+ */
+export const RAY_ANGLE_SIGNED_MIN_DEG = -90;
+
+/**
+ * Viewport for the signed domain [-90, 210]: RAY_VIEW extended downward. Only the bottom changes
+ * (the top extreme is still at 90 degrees and the horizontal extreme at 180):
+ *
+ * - Lowest extreme at -90 degrees: base y = cy - 124*sin(-90) - 4 = cy + 120. A label may be
+ *   staggered down by rank 2k-1 over k placed boxes; with three rays plus the two fixed texts the
+ *   diagram reserves (baseline label, band label) k is at most 4, so the largest descent is
+ *   rank 7 = +4 steps = +76, and the box bottom (+DESCENT 4) is at most cy + 200 = 390 for
+ *   cy = 190. Hence height 390.
+ * - The delta label (base radius 84, see deltaLabelPosition) reaches at most cy + 84 + 57 + 4 =
+ *   cy + 145 for its realistic avoid count, inside the same height.
+ */
+export const RAY_VIEW_SIGNED: RayLabelView = { cx: 170, cy: 190, r: 110, width: 340, height: 390 };
+
+/** A closed range of drawable ray angles (degrees). */
+export interface AngleDomain {
+  min: number;
+  max: number;
+}
+
+/** The default domain [RAY_ANGLE_MIN_DEG, RAY_ANGLE_MAX_DEG]. */
+export const ANGLE_DOMAIN: AngleDomain = { min: RAY_ANGLE_MIN_DEG, max: RAY_ANGLE_MAX_DEG };
+/** The signed domain [RAY_ANGLE_SIGNED_MIN_DEG, RAY_ANGLE_MAX_DEG]. */
+export const ANGLE_DOMAIN_SIGNED: AngleDomain = { min: RAY_ANGLE_SIGNED_MIN_DEG, max: RAY_ANGLE_MAX_DEG };
+
 /** Default clearance radius between a ray tip (radius r) and its label anchor. */
 const RAY_LABEL_RADIUS_OFFSET = 14;
 /** Small vertical nudge that lifts a label off the ray line / baseline. */
@@ -125,20 +158,31 @@ const ANGLE_DOMAIN_EPS = 1e-6;
 
 /** Fails loudly (throws) when angleDeg is outside the supported domain. Callers whose
  *  values can exceed RAY_ANGLE_MAX_DEG must decide to skip the diagram before calling. */
-function assertInAngleDomain(angleDeg: number, context: string): void {
-  if (angleDeg < RAY_ANGLE_MIN_DEG - ANGLE_DOMAIN_EPS || angleDeg > RAY_ANGLE_MAX_DEG + ANGLE_DOMAIN_EPS) {
+export function assertInAngleDomain(angleDeg: number, context: string, domain: AngleDomain = ANGLE_DOMAIN): void {
+  if (angleDeg < domain.min - ANGLE_DOMAIN_EPS || angleDeg > domain.max + ANGLE_DOMAIN_EPS) {
     throw new RangeError(
-      `${context}: angle ${angleDeg}° is outside the supported domain ` +
-        `[RAY_ANGLE_MIN_DEG, RAY_ANGLE_MAX_DEG] = [${RAY_ANGLE_MIN_DEG}, ${RAY_ANGLE_MAX_DEG}]°. ` +
-        `Both bounds are exported from @iyulab/u-scene/engineering (see the README Rules): ` +
-        `check an angle against them and omit the diagram instead of passing it.`
+      `${context}: angle ${angleDeg}° is outside the supported domain [${domain.min}, ${domain.max}]° ` +
+        `(RAY_ANGLE_MIN_DEG, or RAY_ANGLE_SIGNED_MIN_DEG in a signed diagram, to RAY_ANGLE_MAX_DEG). ` +
+        `Check an angle with isDrawableAngle from @iyulab/u-scene/engineering (see the README Rules) ` +
+        `and omit the diagram instead of passing it.`
     );
   }
 }
 
+/**
+ * Whether `angleDiagram` can draw this angle — finite and inside the domain of the chosen mode.
+ * Hosts check a value with this before building a model, so the bound is stated in one place (an
+ * out-of-domain angle throws a RangeError inside the preset, and an omitted diagram is better than
+ * a drawing that lies).
+ */
+export function isDrawableAngle(angleDeg: number, options: { signed?: boolean } = {}): boolean {
+  const { min, max } = options.signed ? ANGLE_DOMAIN_SIGNED : ANGLE_DOMAIN;
+  return Number.isFinite(angleDeg) && angleDeg >= min - ANGLE_DOMAIN_EPS && angleDeg <= max + ANGLE_DOMAIN_EPS;
+}
+
 /** Clamp that only tidies floating-point boundary residue of values that passed assertInAngleDomain. */
-function clampToAngleDomain(angleDeg: number): number {
-  return Math.min(RAY_ANGLE_MAX_DEG, Math.max(RAY_ANGLE_MIN_DEG, angleDeg));
+function clampToAngleDomain(angleDeg: number, domain: AngleDomain): number {
+  return Math.min(domain.max, Math.max(domain.min, angleDeg));
 }
 
 /** Rebuilds the rectangle a placement occupies from its anchor plus width and height. When
@@ -157,8 +201,9 @@ export function rayLabelBox(p: LabelPlacement, width: number = RAY_LABEL_ASSUMED
 
 /** Picks the anchor so a label always grows toward the center (inward) - the core of clipping prevention. */
 function rayLabelAnchor(angleDeg: number): LabelAnchor {
-  if (Math.abs(angleDeg - 90) <= RAY_LABEL_CENTER_ZONE_DEG) return 'middle';
-  return angleDeg < 90 ? 'end' : 'start';
+  // Straight up, and straight down in a signed diagram, are left/right symmetric.
+  if (Math.abs(angleDeg - 90) <= RAY_LABEL_CENTER_ZONE_DEG || Math.abs(angleDeg + 90) <= RAY_LABEL_CENTER_ZONE_DEG) return 'middle';
+  return angleDeg < 90 && angleDeg > -90 ? 'end' : 'start';
 }
 
 interface RayLabelBase {
@@ -246,12 +291,17 @@ function dyForRank(rank: number): number {
  * are treated like already placed boxes, so de-collision avoids them. The pigeonhole
  * argument counts them too (they seed placedBoxes), so the guarantee holds.
  */
-export function rayLabelPlacements(angles: number[], view: RayLabelView, reserved: LabelBox[] = []): LabelPlacement[] {
+export function rayLabelPlacements(
+  angles: number[],
+  view: RayLabelView,
+  reserved: LabelBox[] = [],
+  domain: AngleDomain = ANGLE_DOMAIN,
+): LabelPlacement[] {
   const { cx, cy, r, width: viewWidth } = view;
   const baseRadius = r + RAY_LABEL_RADIUS_OFFSET;
 
-  angles.forEach(a => assertInAngleDomain(a, 'rayLabelPlacements'));
-  const clamped = angles.map(clampToAngleDomain);
+  angles.forEach(a => assertInAngleDomain(a, 'rayLabelPlacements', domain));
+  const clamped = angles.map(a => clampToAngleDomain(a, domain));
   const bases = clamped.map(a => rayLabelBase(cx, cy, a, baseRadius, viewWidth));
   const order = angles.map((_, i) => i).sort((a, b) => clamped[a] - clamped[b]);
 
@@ -351,6 +401,7 @@ export function deltaLabelPosition(
   baseRadius: number,
   avoid: LabelBox[],
   view: Pick<RayLabelView, 'cx' | 'cy' | 'width' | 'height'>,
+  domain: AngleDomain = ANGLE_DOMAIN,
 ): Point {
   const { cx, cy, width: viewWidth, height: viewHeight } = view;
   // Same input contract as rayLabelPlacements: fromDeg/toDeg must lie in
@@ -358,10 +409,10 @@ export function deltaLabelPosition(
   // clamp here would make the delta side and the ray side (which no longer clamps) refer to
   // different angles for an overbend angle beyond 180 degrees. The remaining
   // clampToAngleDomain only tidies floating-point residue of validated values.
-  assertInAngleDomain(fromDeg, 'deltaLabelPosition(fromDeg)');
-  assertInAngleDomain(toDeg, 'deltaLabelPosition(toDeg)');
-  const clampedFrom = clampToAngleDomain(fromDeg);
-  const clampedTo = clampToAngleDomain(toDeg);
+  assertInAngleDomain(fromDeg, 'deltaLabelPosition(fromDeg)', domain);
+  assertInAngleDomain(toDeg, 'deltaLabelPosition(toDeg)', domain);
+  const clampedFrom = clampToAngleDomain(fromDeg, domain);
+  const clampedTo = clampToAngleDomain(toDeg, domain);
   const midAngle = (clampedFrom + clampedTo) / 2;
   const base = polarPoint(cx, cy, baseRadius, midAngle);
   // x is decided once and never changes afterwards - this rules out push (y search) and

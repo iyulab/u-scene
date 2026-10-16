@@ -65,7 +65,11 @@ at equal module they are proportional.
 - Labels are shown exactly as given and are always escaped.
 - Presets reject non-finite or out-of-range model values with a `TypeError`.
 - `angleDiagram` draws angles from `RAY_ANGLE_MIN_DEG` to `RAY_ANGLE_MAX_DEG` (0 to 210
-  degrees) and throws a `RangeError` for a ray or delta angle outside that range - it never
-  clamps an angle into a wrong drawing. Check values against these exported constants and
-  omit the diagram when one falls outside.
+  degrees), or from `RAY_ANGLE_SIGNED_MIN_DEG` (-90) with `signed: true` - a downhill grade or a
+  negative springback drawn below the baseline on a taller view. It throws a `RangeError` for a
+  ray, band edge or delta angle outside the chosen range - it never clamps an angle into a wrong
+  drawing. Check values with `isDrawableAngle(deg, { signed })` and omit the diagram when one
+  falls outside.
+- `bendSectionDiagram` draws the neutral axis only from a `kFactor` the host gives; a band
+  (`kFactorMin` + `kFactorMax`) without it is drawn alone, with no centre line.
 - A scene's `title` renders as `<title>` and its `description` as `<desc>`, both escaped.

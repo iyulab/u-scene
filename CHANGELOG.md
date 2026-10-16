@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Signed angles.** `angleDiagram({ signed: true })` draws angles below the baseline too, over
+  [`RAY_ANGLE_SIGNED_MIN_DEG`, `RAY_ANGLE_MAX_DEG`] = [-90, 210] degrees, on `RAY_VIEW_SIGNED`
+  (340 x 390). The view height is derived from the label constants like `RAY_VIEW`'s, and the label
+  sweeps cover the signed domain. Without `signed` nothing changes.
+- **`isDrawableAngle(deg, { signed? })`** says whether `angleDiagram` can draw an angle, so a host
+  states the bound once instead of comparing against the constants itself. `ANGLE_DOMAIN`,
+  `ANGLE_DOMAIN_SIGNED`, `AngleDomain` and `assertInAngleDomain` are exported with it;
+  `rayLabelPlacements` and `deltaLabelPosition` take the domain as an optional last argument.
+
+### Changed
+
+- **Breaking: a band edge outside the domain throws a `RangeError`**, as rays and deltas already do.
+  A band below the baseline or past 210 degrees used to be drawn anyway.
+- **Breaking: `bendSectionGeometry` takes `kFactor` as optional** and, without it, returns
+  `neutralPath`, `neutralLabel` and `neutralRadiusPx` as `null` - it used to compute them from a
+  stand-in factor of 0.5. `bendSectionDiagram` draws the same scene as before; a model with only
+  `kFactorMin`/`kFactorMax` draws the band with no centre line.
+
 ## [0.2.0] - 2026-10-15
 
 ### Added
