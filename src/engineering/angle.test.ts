@@ -13,7 +13,7 @@ const full: AngleDiagramModel = {
     { angleDeg: 102.2, label: 'Overbend 102.2°', tone: 'accent', style: 'dashed' },
     { angleDeg: 90, label: 'Target 90°' },
   ],
-  band: { fromDeg: 70, toDeg: 80, label: 'Safe range', severity: 'success' },
+  band: { fromDeg: 70, toDeg: 80, label: 'Safe range', severity: 'ok' },
   delta: { fromDeg: 90, toDeg: 102.2, label: '12.2°' },
   baselineLabel: 'Base',
   title: 'Bend angles',
@@ -21,14 +21,14 @@ const full: AngleDiagramModel = {
 
 describe('rayPaint', () => {
   it('a severity wins over the tone', () => {
-    expect(rayPaint({ tone: 'primary', severity: 'danger' })).toBe('danger');
+    expect(rayPaint({ tone: 'primary', severity: 'alarm' })).toBe('alarm');
   });
   it('without a severity the tone hex is used, primary by default', () => {
     expect(rayPaint({ tone: 'accent' })).toBe('#0ea5e9');
     expect(rayPaint({})).toBe('#f97316');
   });
   it('no structural tone collides with a status color', () => {
-    const status = [TONE_DEFAULTS.success, TONE_DEFAULTS.warning, TONE_DEFAULTS.danger, TONE_DEFAULTS.info];
+    const status = [TONE_DEFAULTS.ok, TONE_DEFAULTS.warn, TONE_DEFAULTS.alarm, TONE_DEFAULTS.info];
     for (const hex of Object.values(ANGLE_TONE_HEX)) expect(status).not.toContain(hex);
   });
 });

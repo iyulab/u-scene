@@ -12,9 +12,9 @@ export const TONE_DEFAULTS: Readonly<Record<Tone, HexColor>> = {
   paper: '#ffffff',
   primary: '#f97316',
   accent: '#0ea5e9',
-  success: '#22c55e',
-  warning: '#f59e0b',
-  danger: '#ef4444',
+  ok: '#22c55e',
+  warn: '#f59e0b',
+  alarm: '#ef4444',
   info: '#6366f1',
 };
 

@@ -5,7 +5,7 @@ import type { Handle } from './handles.js';
 export const TONES = [
   'ink', 'ink-strong', 'muted', 'faint', 'line', 'paper',
   'primary', 'accent',
-  'success', 'warning', 'danger', 'info',
+  'ok', 'warn', 'alarm', 'info',
 ] as const;
 
 export type Tone = (typeof TONES)[number];

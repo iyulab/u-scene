@@ -43,8 +43,8 @@ describe('renderToSvgString', () => {
   });
 
   it('mixes a status-tone label with ink-strong, so small text keeps its hue and reaches text contrast', () => {
-    const out = renderToSvgString({ ...base, nodes: [{ kind: 'text', x: 0, y: 0, text: 'ok', anchor: 'start', paint: 'success' }] });
-    expect(out).toContain('fill="color-mix(in oklab, var(--u-scene-success, #22c55e) 60%, var(--u-scene-ink-strong, #0f172a))"');
+    const out = renderToSvgString({ ...base, nodes: [{ kind: 'text', x: 0, y: 0, text: 'ok', anchor: 'start', paint: 'ok' }] });
+    expect(out).toContain('fill="color-mix(in oklab, var(--u-scene-ok, #22c55e) 60%, var(--u-scene-ink-strong, #0f172a))"');
   });
 
   it('renders shapes with fill, stroke and dash', () => {

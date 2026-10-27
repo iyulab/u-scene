@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-27
+
+### Changed
+
+- **Breaking: the status tones are `ok`, `warn`, `alarm` and `info`** — the status words of `@iyulab/u-widgets` tones
+  (0.41.0 and later), so a host that draws a verdict with a widget and the same verdict in a diagram passes one value to
+  both. `TONES`, `TONE_DEFAULTS`, the engineering `Severity` and the CSS custom properties are renamed; colours are
+  unchanged. The structural tones (`ink` … `accent`) are unchanged.
+
+  | Was | Now |
+  |---|---|
+  | `'success'` · `--u-scene-success` | `'ok'` · `--u-scene-ok` |
+  | `'warning'` · `--u-scene-warning` | `'warn'` · `--u-scene-warn` |
+  | `'danger'` · `--u-scene-danger` | `'alarm'` · `--u-scene-alarm` |
+  | `'info'` · `--u-scene-info` | unchanged |
+
+  Migration: rename the words in scene paints and angle `severity` values, and any `--u-scene-success|warning|danger`
+  a page sets. An old word is not read: `resolvePaint` throws on it, as on any unknown paint.
+
 ## [0.3.0] - 2026-10-16
 
 ### Added

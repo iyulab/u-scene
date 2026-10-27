@@ -5,7 +5,7 @@ import { TONES } from './types.js';
 describe('resolvePaint', () => {
   it('maps a tone to a themable custom property with its default', () => {
     expect(resolvePaint('ink')).toBe('var(--u-scene-ink, #334155)');
-    expect(resolvePaint('success')).toBe('var(--u-scene-success, #22c55e)');
+    expect(resolvePaint('ok')).toBe('var(--u-scene-ok, #22c55e)');
   });
 
   it('passes a hex color through unchanged', () => {

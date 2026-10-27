@@ -57,7 +57,8 @@ setting them on `u-scene` (and `svg.u-scene` for static markup):
     }
 
 Tones: `ink`, `ink-strong`, `muted`, `faint`, `line`, `paper`, `primary`, `accent`,
-`success`, `warning`, `danger`, `info`.
+`ok`, `warn`, `alarm`, `info` — the status words of `@iyulab/u-widgets`' tones, so a verdict and its
+diagram share one value.
 
 ## Engineering presets
 

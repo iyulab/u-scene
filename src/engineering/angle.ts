@@ -9,7 +9,7 @@ import {
 import type { AngleDomain, RayLabelView } from './angle-geometry.js';
 
 export type AngleTone = 'primary' | 'accent' | 'muted';
-export type Severity = 'success' | 'warning' | 'danger' | 'info';
+export type Severity = 'ok' | 'warn' | 'alarm' | 'info';
 
 export interface AngleRay {
   /** Degrees, counter-clockwise from +x. */

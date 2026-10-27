@@ -22,10 +22,10 @@ describe('preset SVG snapshots', () => {
     const svg = svgOf(angleDiagram({
       rays: [
         { angleDeg: 90, label: 'target 90°', style: 'dashed', tone: 'muted' },
-        { angleDeg: 102.5, label: 'actual 102.5°', severity: 'warning' },
+        { angleDeg: 102.5, label: 'actual 102.5°', severity: 'warn' },
         { angleDeg: 30, label: 'reference 30°', tone: 'accent' },
       ],
-      band: { fromDeg: 85, toDeg: 95, label: 'tolerance', severity: 'success' },
+      band: { fromDeg: 85, toDeg: 95, label: 'tolerance', severity: 'ok' },
       delta: { fromDeg: 90, toDeg: 102.5, label: '+12.5°' },
       baselineLabel: '0°',
       title: 'Angle',

@@ -5,14 +5,14 @@
 <path d="M 0 0 L 8 4 L 0 8 z" fill="#94a3b8"/>
 </marker>
 </defs>
-<path d="M 170 190 L 179.59 80.42 A 110 110 0 0 0 160.41 80.42 Z" fill="var(--u-scene-success, #22c55e)" fill-opacity="0.14" stroke="var(--u-scene-success, #22c55e)" stroke-width="1" stroke-opacity="0.35"/>
-<text x="170" y="140.5" text-anchor="middle" fill="color-mix(in oklab, var(--u-scene-success, #22c55e) 60%, var(--u-scene-ink-strong, #0f172a))" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">tolerance</text>
+<path d="M 170 190 L 179.59 80.42 A 110 110 0 0 0 160.41 80.42 Z" fill="var(--u-scene-ok, #22c55e)" fill-opacity="0.14" stroke="var(--u-scene-ok, #22c55e)" stroke-width="1" stroke-opacity="0.35"/>
+<text x="170" y="140.5" text-anchor="middle" fill="color-mix(in oklab, var(--u-scene-ok, #22c55e) 60%, var(--u-scene-ink-strong, #0f172a))" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">tolerance</text>
 <line x1="60" y1="190" x2="280" y2="190" fill="none" stroke="var(--u-scene-line, #cbd5e1)" stroke-width="1.5"/>
 <text x="280" y="204" text-anchor="end" fill="var(--u-scene-muted, #64748b)" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="500">0°</text>
 <line x1="170" y1="190" x2="170" y2="80" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6 4" stroke-linecap="round"/>
 <text x="170" y="62" text-anchor="middle" fill="color-mix(in oklab, #94a3b8 60%, var(--u-scene-ink-strong, #0f172a))" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">target 90°</text>
-<line x1="170" y1="190" x2="146.19" y2="82.61" fill="none" stroke="var(--u-scene-warning, #f59e0b)" stroke-width="2.5" stroke-linecap="round"/>
-<text x="143.16" y="83.94" text-anchor="start" fill="color-mix(in oklab, var(--u-scene-warning, #f59e0b) 60%, var(--u-scene-ink-strong, #0f172a))" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">actual 102.5°</text>
+<line x1="170" y1="190" x2="146.19" y2="82.61" fill="none" stroke="var(--u-scene-warn, #f59e0b)" stroke-width="2.5" stroke-linecap="round"/>
+<text x="143.16" y="83.94" text-anchor="start" fill="color-mix(in oklab, var(--u-scene-warn, #f59e0b) 60%, var(--u-scene-ink-strong, #0f172a))" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">actual 102.5°</text>
 <line x1="170" y1="190" x2="265.26" y2="135" fill="none" stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round"/>
 <text x="277.39" y="124" text-anchor="end" fill="color-mix(in oklab, #0ea5e9 60%, var(--u-scene-ink-strong, #0f172a))" stroke="var(--u-scene-paper, #ffffff)" stroke-width="3" stroke-linejoin="round" paint-order="stroke" font-size="11" font-weight="600">reference 30°</text>
 <path d="M 170.00 128.00 A 62 62 0 0 0 156.58 129.47" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#u-scene-arrow-94a3b8)"/>
