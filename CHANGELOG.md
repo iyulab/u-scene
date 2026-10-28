@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`boxLayoutDiagram`** — one layer of identical boxes on a floor (a pallet deck, a container floor) seen from above, and
+  the stack of layers beside it seen from the side, on one scale: the elevation's columns sit under the plan's, the deck
+  band and an optional dashed height limit are drawn, and the floor length, floor width and stack height carry the labels
+  the host passes. The boxes come from the caller (its calculation decides how many fit and where); a box outside the
+  floor throws a `TypeError`. Returns `null` when there is nothing to draw (no boxes, fewer than one layer) or when a box
+  edge or a layer would be drawn under 2 px (`BOX_LAYOUT_MAX_BOXES` 23,146 and `BOX_LAYOUT_MAX_LAYERS` 163 in the view).
+  Geometry exported as `boxLayoutGeometry` and `boxLayoutLimits`.
+
 ## [0.4.0] - 2026-10-27
 
 ### Changed

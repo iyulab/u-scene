@@ -63,11 +63,17 @@ diagram share one value.
 ## Engineering presets
 
 `angleDiagram`, `bendSectionDiagram`, `threadProfileDiagram`, `rectSectionDiagram`,
-`ringSectionDiagram`, `floorPlanDiagram`, `gearMeshDiagram` - each takes a model of values and
+`ringSectionDiagram`, `floorPlanDiagram`, `gearMeshDiagram`, `boxLayoutDiagram` - each takes a model of values and
 pre-formatted labels and returns a scene. `angleDiagram` returns `null` when there are no rays to draw, and
 `floorPlanDiagram` returns `null` when `fixtureCount` is zero or less, or above
 `FLOOR_PLAN_MAX_FIXTURES` (638 - beyond it the markers touch in every room shape, so the
 plan could no longer show the count).
+
+`boxLayoutDiagram` draws one layer of boxes on a floor in plan and the stack of layers in elevation on
+one scale (a pallet or a container load), with the length, width and stack-height dimensions and an optional
+dashed height limit. The boxes are passed in as placements - it does not count or place them - and it returns `null`
+when there are no boxes or layers, or when a box or a layer would be drawn under 2 px (`BOX_LAYOUT_MAX_BOXES`,
+`BOX_LAYOUT_MAX_LAYERS`).
 
 `gearMeshDiagram` draws one gear, or a driver and a driven gear tangent at the pitch point, as
 circles on one scale (pitch, and tip and root when given) with opposite rotation arrows and the

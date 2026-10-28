@@ -8,6 +8,7 @@ import { rectSectionDiagram } from './rect-section.js';
 import { ringSectionDiagram } from './ring-section.js';
 import { floorPlanDiagram } from './floor-plan.js';
 import { gearMeshDiagram } from './gear-mesh.js';
+import { boxLayoutDiagram } from './box-layout.js';
 
 /** One element per line, so a snapshot diff points at the node whose paint, dash or order changed. */
 function svgOf(scene: Scene | null): string {
@@ -106,5 +107,22 @@ describe('preset SVG snapshots', () => {
       title: 'Gear mesh',
     }));
     await expect(svg).toMatchFileSnapshot('./__snapshots__/gear-mesh.svg');
+  });
+
+  it('boxLayoutDiagram', async () => {
+    const boxes = [];
+    for (let row = 0; row < 4; row++) for (let col = 0; col < 4; col++) boxes.push({ x: col * 300, y: row * 200, length: 300, width: 200 });
+    const svg = svgOf(boxLayoutDiagram({
+      floorLength: 1200,
+      floorWidth: 800,
+      boxes,
+      layers: 5,
+      boxHeight: 300,
+      deckHeight: 150,
+      limitHeight: 1800,
+      labels: { length: '1200 mm', width: '800 mm', height: '1650 mm', limit: 'limit 1800 mm' },
+      title: 'Box layout',
+    }));
+    await expect(svg).toMatchFileSnapshot('./__snapshots__/box-layout.svg');
   });
 });

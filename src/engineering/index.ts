@@ -21,3 +21,6 @@ export { gearMeshDiagram } from './gear-mesh.js';
 export type { GearMeshDiagramModel } from './gear-mesh.js';
 export { linearDimensionNodes } from './linear-dimension.js';
 export type { LinearDimension } from './linear-dimension.js';
+export * from './box-layout-geometry.js';
+export { boxLayoutDiagram, BOX_LAYOUT_MAX_BOXES, BOX_LAYOUT_MAX_LAYERS } from './box-layout.js';
+export type { BoxLayoutDiagramModel } from './box-layout.js';
