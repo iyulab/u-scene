@@ -32,6 +32,9 @@ export interface BoxLayoutView {
   width: number;
   /** Tallest drawing allowed (px): plan + gap + elevation share it, and the scale shrinks to meet it. */
   maxHeight: number;
+  /** Room for the vertical dimension texts (px), at least `BOX_LAYOUT_LEFT` / `BOX_LAYOUT_RIGHT`: a longer label asks for more. */
+  leftGutter?: number;
+  rightGutter?: number;
 }
 
 export interface Rect { x: number; y: number; width: number; height: number; }
@@ -60,7 +63,7 @@ export interface BoxLayoutGeometry {
   layerPx: number;
 }
 
-/** Gutters for the dimension lines and their labels (px). */
+/** Least gutters for the dimension lines and their labels (px). */
 export const BOX_LAYOUT_LEFT = 78;
 export const BOX_LAYOUT_RIGHT = 78;
 export const BOX_LAYOUT_TOP = 30;
@@ -74,11 +77,13 @@ export const BOX_LAYOUT_MIN_PX = 2;
 export function boxLayoutGeometry(m: BoxLayoutInput, view: BoxLayoutView): BoxLayoutGeometry {
   const stackHeight = m.deckHeight + m.layers * m.boxHeight;
   const elevationUnits = Math.max(stackHeight, m.limitHeight ?? 0);
-  const availW = view.width - BOX_LAYOUT_LEFT - BOX_LAYOUT_RIGHT;
+  const left = Math.max(view.leftGutter ?? 0, BOX_LAYOUT_LEFT);
+  const right = Math.max(view.rightGutter ?? 0, BOX_LAYOUT_RIGHT);
+  const availW = view.width - left - right;
   const availH = view.maxHeight - BOX_LAYOUT_TOP - BOX_LAYOUT_BOTTOM - BOX_LAYOUT_GAP;
   const scale = Math.min(availW / m.floorLength, availH / (m.floorWidth + elevationUnits));
 
-  const x0 = BOX_LAYOUT_LEFT;
+  const x0 = left;
   const y0 = BOX_LAYOUT_TOP;
   const floorRect: Rect = { x: x0, y: y0, width: m.floorLength * scale, height: m.floorWidth * scale };
   const planBoxes = m.boxes.map((b): Rect => ({ x: x0 + b.x * scale, y: y0 + b.y * scale, width: b.length * scale, height: b.width * scale }));

@@ -29,6 +29,15 @@ export interface BoxLayoutDiagramModel {
 
 const VIEW: BoxLayoutView & { width: number } = { width: 440, maxHeight: 400 };
 
+/** What a label needs beside its dimension line (px): about 7 per character at the label size, 12 for a full-width one,
+ *  plus the distance of the text from the drawing. Never more than a third of the view, so a very long label cannot
+ *  squeeze the drawing out. */
+function gutterFor(label: string): number {
+  let w = 0;
+  for (const ch of label) w += (ch.codePointAt(0) ?? 0) > 0x2e80 ? 12 : 7;
+  return Math.min(Math.ceil(w) + 26, Math.floor(VIEW.width / 3));
+}
+
 /** The most boxes in a layer, and layers in a stack, that can be drawn apart in this view (23,146 boxes, 163 layers) - above them `boxLayoutDiagram` returns `null`. */
 export const BOX_LAYOUT_MAX_BOXES = boxLayoutLimits(VIEW).maxBoxes;
 export const BOX_LAYOUT_MAX_LAYERS = boxLayoutLimits(VIEW).maxLayers;
@@ -59,7 +68,7 @@ export function boxLayoutDiagram(m: BoxLayoutDiagramModel): Scene | null {
   if (m.boxes.length > BOX_LAYOUT_MAX_BOXES || Math.floor(m.layers) > BOX_LAYOUT_MAX_LAYERS) return null;
   const layers = Math.floor(m.layers);
 
-  const g = boxLayoutGeometry({ ...m, layers, deckHeight }, VIEW);
+  const g = boxLayoutGeometry({ ...m, layers, deckHeight }, { ...VIEW, leftGutter: gutterFor(m.labels.width), rightGutter: gutterFor(m.labels.height) });
   if (g.minEdgePx < BOX_LAYOUT_MIN_PX || g.layerPx < BOX_LAYOUT_MIN_PX) return null;
 
   const box = { fill: { paint: 'primary' as const, opacity: 0.22 }, stroke: { paint: 'ink' as const, width: 1 } };

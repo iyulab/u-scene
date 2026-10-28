@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-28
+
+### Fixed
+
+- **`boxLayoutDiagram`: a long width or height label was cut at the edge of the drawing** — the text beside the vertical dimension
+  lines got a fixed gutter, so "Breite 800 mm" lost its first letters. The gutters now follow the labels (about 7 px per character,
+  12 for a full-width one, at most a third of the view each); the drawing scales down to make room.
+
 ## [0.5.0] - 2026-10-28
 
 ### Added

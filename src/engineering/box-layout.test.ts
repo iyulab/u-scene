@@ -129,6 +129,37 @@ describe('boxLayoutDiagram', () => {
   });
 });
 
+describe('boxLayoutDiagram label room', () => {
+  const textNodes = (labelsOverride: Partial<typeof labels>) =>
+    (boxLayoutDiagram({ ...pallet, labels: { ...labels, ...labelsOverride } })!.nodes.filter((n) => n.kind === 'text') as { x: number; text: string; anchor: string }[]);
+
+  it('a longer vertical label gets the room it needs: its text starts inside the view', () => {
+    for (const width of ['800 mm', 'Breite 800 mm', '폭 800 mm', '幅 800 mm']) {
+      const t = textNodes({ width }).find((n) => n.text === width)!;
+      expect(t.anchor).toBe('end');
+      const estimated = [...width].reduce((w, ch) => w + ((ch.codePointAt(0) ?? 0) > 0x2e80 ? 12 : 7), 0);
+      expect(t.x - estimated, width).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('the same for the height label on the right', () => {
+    const height = 'Ladehöhe 1.644 mm';
+    const scene = boxLayoutDiagram({ ...pallet, labels: { ...labels, height } })!;
+    const t = (scene.nodes.filter((n) => n.kind === 'text') as { x: number; text: string }[]).find((n) => n.text === height)!;
+    const estimated = [...height].reduce((w, ch) => w + ((ch.codePointAt(0) ?? 0) > 0x2e80 ? 12 : 7), 0);
+    expect(t.x + estimated).toBeLessThanOrEqual(scene.width);
+  });
+
+  it('short labels leave the floor where it was; long ones shrink the drawing, they do not clip it', () => {
+    // a wide floor, so the width (not the height) sets the scale
+    const wide = { floorLength: 12032, floorWidth: 2352, boxes: grid(20, 5, 600, 400), layers: 5, boxHeight: 450, deckHeight: 0, labels };
+    const short = boxLayoutGeometry(geometryInput(wide as unknown as typeof pallet), { ...VIEW, leftGutter: 0, rightGutter: 0 });
+    const long = boxLayoutGeometry(geometryInput(wide as unknown as typeof pallet), { ...VIEW, leftGutter: 120, rightGutter: 120 });
+    expect(long.floorRect.x).toBeGreaterThan(short.floorRect.x);
+    expect(long.scale).toBeLessThan(short.scale);
+  });
+});
+
 describe('boxLayoutDiagram input checks', () => {
   it('rejects bad numbers with a TypeError naming the field', () => {
     expect(() => boxLayoutDiagram({ ...pallet, floorLength: 0 })).toThrow(/floorLength/);
