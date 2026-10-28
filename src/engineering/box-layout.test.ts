@@ -134,7 +134,7 @@ describe('boxLayoutDiagram label room', () => {
     (boxLayoutDiagram({ ...pallet, labels: { ...labels, ...labelsOverride } })!.nodes.filter((n) => n.kind === 'text') as { x: number; text: string; anchor: string }[]);
 
   it('a longer vertical label gets the room it needs: its text starts inside the view', () => {
-    for (const width of ['800 mm', 'Breite 800 mm', '폭 800 mm', '幅 800 mm']) {
+    for (const width of ['800 mm', 'Breite 800 mm', String.fromCharCode(0xd3ed) + ' 800 mm', '幅 800 mm']) {
       const t = textNodes({ width }).find((n) => n.text === width)!;
       expect(t.anchor).toBe('end');
       const estimated = [...width].reduce((w, ch) => w + ((ch.codePointAt(0) ?? 0) > 0x2e80 ? 12 : 7), 0);
